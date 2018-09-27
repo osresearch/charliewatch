@@ -10621,7 +10621,9 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <wire x1="86.36" y1="119.38" x2="96.52" y2="119.38" width="0.1524" layer="91"/>
 <pinref part="LED67" gate="G$1" pin="C"/>
 <junction x="55.88" y="119.38"/>
-<wire x1="45.72" y1="129.54" x2="45.72" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="45.72" y1="129.54" x2="45.72" y2="121.92" width="0.1524" layer="91"/>
+<junction x="45.72" y="121.92"/>
+<wire x1="45.72" y1="121.92" x2="45.72" y2="119.38" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P3.3/PM_TA0CCR2A"/>
@@ -10694,6 +10696,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <junction x="86.36" y="134.62"/>
 <junction x="55.88" y="134.62"/>
 <wire x1="35.56" y1="144.78" x2="35.56" y2="134.62" width="0.1524" layer="91"/>
+<junction x="35.56" y="134.62"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P3.2/PM_TA0CCR1A"/>
@@ -10766,6 +10769,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <junction x="76.2" y="149.86"/>
 <junction x="55.88" y="149.86"/>
 <wire x1="25.4" y1="160.02" x2="25.4" y2="149.86" width="0.1524" layer="91"/>
+<junction x="25.4" y="149.86"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P3.1/PM_TA0CCR0A"/>
@@ -10837,6 +10841,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <junction x="66.04" y="165.1"/>
 <junction x="55.88" y="165.1"/>
 <wire x1="15.24" y1="175.26" x2="15.24" y2="165.1" width="0.1524" layer="91"/>
+<junction x="15.24" y="165.1"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P3.0/PM_CBOUT0/PM_TA0CLK"/>
@@ -10982,6 +10987,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <wire x1="96.52" y1="99.06" x2="91.44" y2="99.06" width="0.1524" layer="91"/>
 <junction x="91.44" y="99.06"/>
 <wire x1="96.52" y1="48.26" x2="96.52" y2="58.42" width="0.1524" layer="91"/>
+<junction x="96.52" y="48.26"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P2.3/PM_TA1CCR2A/CB3/A3"/>
@@ -11054,6 +11060,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <junction x="35.56" y="63.5"/>
 <junction x="55.88" y="63.5"/>
 <wire x1="86.36" y1="73.66" x2="86.36" y2="63.5" width="0.1524" layer="91"/>
+<junction x="86.36" y="63.5"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P2.2/PM_TA1CCR1A/CB2/A2"/>
@@ -11126,6 +11133,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <junction x="25.4" y="78.74"/>
 <junction x="55.88" y="78.74"/>
 <wire x1="76.2" y1="88.9" x2="76.2" y2="78.74" width="0.1524" layer="91"/>
+<junction x="76.2" y="78.74"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P2.1/PM_TA1CCR0A/CB1/A1"/>
@@ -11198,6 +11206,7 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <junction x="15.24" y="91.44"/>
 <junction x="55.88" y="91.44"/>
 <wire x1="66.04" y1="101.6" x2="66.04" y2="91.44" width="0.1524" layer="91"/>
+<junction x="66.04" y="91.44"/>
 </segment>
 <segment>
 <pinref part="U2" gate="A" pin="P2.0/PM_CBOUT1/PM_TA1CLK/CB0/A0"/>
@@ -11465,6 +11474,9 @@ ULTRA MINIATURE SIZE LOW PROFILE SMD&lt;br&gt;&lt;br&gt;
 <pinref part="U2" gate="A" pin="DVCC_2"/>
 <wire x1="124.46" y1="149.86" x2="124.46" y2="160.02" width="0.1524" layer="91"/>
 <label x="124.46" y="160.02" size="1.778" layer="95"/>
+<pinref part="U2" gate="A" pin="DVCC_3"/>
+<wire x1="124.46" y1="147.32" x2="124.46" y2="149.86" width="0.1524" layer="91"/>
+<junction x="124.46" y="149.86"/>
 </segment>
 <segment>
 <wire x1="93.98" y1="25.4" x2="83.82" y2="25.4" width="0.1524" layer="91"/>
