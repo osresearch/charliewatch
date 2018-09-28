@@ -2,3 +2,4 @@
 *.s\#*
 .*lck
 *.pro
+pcb/routed.sch
