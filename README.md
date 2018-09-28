@@ -7,3 +7,4 @@ also pads for a six pin FTDI cable with pogopins for programming or
 serial communication.
 
 v0.1 was ordered 2018-09-27, not yet tested.
+[Charliewtch schematic](datasheets/charliewatch.pdf)
