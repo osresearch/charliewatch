@@ -21,7 +21,9 @@ ASFLAGS += -mmcu=$(MCU)
 LDFLAGS += -mmcu=$(MCU)
 
 OBJS += main.o
-OBJS += rtc.o rtcasm.o
+OBJS += led.o
+OBJS += rtc.o
+OBJS += rtcasm.o
 
 all: charliewatch.hex
 
