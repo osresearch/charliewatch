@@ -75,6 +75,7 @@ void __attribute__ ((interrupt(WDT_VECTOR)))
 watchdog_timer(void)
 {
 	static int oldsec;
+	static int do_animation = 0;
 
 	// cycle through the LEDs once per second
 	if (oldsec != RTCSEC)
@@ -86,6 +87,14 @@ watchdog_timer(void)
 		led_display[1] = 60 + (RTCHOUR % 12);
 		led_display[2] = RTCMIN;
 		led_display[3] = RTCSEC;
+
+		if (RTCMIN == RTCSEC)
+			do_animation = 60;
+	} else
+	if (do_animation)
+	{
+		led_display[3] = (led_display[3] + 1) % 60;
+		do_animation--;
 	}
 
 	led_draw();
