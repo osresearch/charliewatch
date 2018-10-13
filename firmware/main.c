@@ -32,6 +32,7 @@ int main(void)
 	PJDIR |=  0xF;
 	PJOUT &= ~0xF;
 
+#if 1
 	rtc_init();
 	// ucs_init(); // doesn't work if crystal isn't there?
 
@@ -49,6 +50,23 @@ int main(void)
 		led_on(60); delay(30000);
 		led_off(); delay(60000);
 	}
+#else
+	// test pattern for all LEDs
+	while(1)
+	{
+		int i, j;
+		for(i = 0 ; i < 72 ; i++)
+		{
+			for(j = 0 ; j < 20 ; j++)
+			{
+				led_on(i); delay(10);
+				led_off(); delay(1000);
+			}
+		}
+
+		delay(10000);
+	}
+#endif
 }
 
 
@@ -64,10 +82,10 @@ watchdog_timer(void)
 		oldsec = RTCSEC;
 		const int i = oldsec % 6;
 
-		led_display[0] = 60 + ((i + 0) % 6);
-		led_display[1] = 60 + ((i + 1) % 6);
-		led_display[2] = 60 + ((i + 2) % 6);
-		led_display[3] = 60 + ((i + 3) % 6);
+		led_display[0] = RTCMIN;
+		led_display[1] = 60 + (RTCHOUR % 12);
+		led_display[2] = RTCMIN;
+		led_display[3] = RTCSEC;
 	}
 
 	led_draw();

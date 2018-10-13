@@ -16,6 +16,7 @@ CFLAGS += \
 	-Os \
 	-MMD \
 	-MF .$(notdir $@).d \
+	-DBUILDTIME=`date "+%y,%m,%d,%H,%M,%S"`
 
 ASFLAGS += -mmcu=$(MCU)
 LDFLAGS += -mmcu=$(MCU)
@@ -45,6 +46,8 @@ flash: charliewatch.elf
 		$(PROGRAMMER) \
 		"prog $<" \
 
+
+
 dmesg:
 	$(BSL) -P goodwatch.hex -uD
 sbwdmesg:
@@ -72,3 +75,4 @@ energytrace.txt: goodwatch.hex sbwflash
 	gnuplot energytrace-txt.gnuplot
 	../bin/batterylife.py <energytrace.txt
 
+-include .*.o.d

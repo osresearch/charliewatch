@@ -12,12 +12,13 @@
 //Automatically generated, not a part of the git repo.
 //#include "buildtime.h"
 
+//! ROM copy of the manufacturing time.
+static const unsigned char romsavetime[] = { BUILDTIME };
+
 //! If this is 0xdeadbeef, the ram time is good.
 static unsigned long magicword __attribute__ ((section (".noinit")));
 //! Time and date, in case of a reboot.
-static unsigned char ramsavetime[8] __attribute__ ((section (".noinit")));
-//! ROM copy of the manufacturing time.
-unsigned char *romsavetime=(unsigned char*) 0; //BUILDTIME;
+static unsigned char ramsavetime[sizeof(romsavetime)] __attribute__ ((section (".noinit")));
 
 #ifdef CONFIG_ALARM
 // Alarm tone status
@@ -26,12 +27,12 @@ static unsigned int alarm_ringing = 0;
 
 //! Save the times to RAM.  Must be fast.
 static void rtc_savetime(){
-  ramsavetime[0]=RTCHOUR;
-  ramsavetime[1]=RTCMIN;
-  ramsavetime[2]=RTCSEC;
-  *((int*) &(ramsavetime[4]))=RTCYEAR;
-  ramsavetime[6]=RTCMON;
-  ramsavetime[7]=RTCDAY;
+  ramsavetime[0]=RTCYEAR - 2000;
+  ramsavetime[1]=RTCMON;
+  ramsavetime[2]=RTCDAY;
+  ramsavetime[3]=RTCHOUR;
+  ramsavetime[4]=RTCMIN;
+  ramsavetime[5]=RTCSEC;
   
   //Set the magic word, so we'll know the time is good.
   magicword=0xdeadbeef;
@@ -41,18 +42,18 @@ static void rtc_savetime(){
 static void rtc_loadtime(){
   //Use the RAM copy if it is reasonable.
   if(magicword!=0xdeadbeef){
-    memcpy(ramsavetime,romsavetime,8);
+    memcpy(ramsavetime,romsavetime,sizeof(ramsavetime));
   }
   
   /* We need to call these functions for safety, as there are some
      awful RTC errata to work around. */
-  SetRTCHOUR(ramsavetime[0]   %24);
-  SetRTCMIN(ramsavetime[1]   %60);
-  SetRTCSEC(ramsavetime[2]   %60);
+  SetRTCHOUR(ramsavetime[3]   %24);
+  SetRTCMIN(ramsavetime[4]   %60);
+  SetRTCSEC(ramsavetime[5]   %60);
   
-  SetRTCYEAR((ramsavetime[4]+(ramsavetime[5]<<8)) % 4096);
-  SetRTCMON(ramsavetime[6]);
-  SetRTCDAY(ramsavetime[7]);
+  SetRTCYEAR(ramsavetime[0] + 2000);
+  SetRTCMON(ramsavetime[1]);
+  SetRTCDAY(ramsavetime[2]);
   //printf("Setting RTCDAY to %d yielded %d.\n",
   //ramsavetime[7], RTCDAY);
 }
