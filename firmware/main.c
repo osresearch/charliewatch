@@ -165,10 +165,10 @@ static uint8_t display[NUM_LEDS_ON] = {};
 
 void draw_display()
 {
-	led_on(display[0]); delay(32);
-	led_on(display[1]); delay(8);
+	led_on(display[0]); delay(16);
+	led_on(display[1]); delay(4);
 	led_on(display[2]); delay(2);
-	led_on(display[3]); delay(1);
+	led_on(display[3]); delay(0);
 	led_off();
 }
 
