@@ -152,6 +152,24 @@ static void delay(unsigned len)
 }
 
 
+// In normal operation there are four LEDs powered on
+// The minute is full bright
+// The hour is half bright
+// the second is quarter bright
+// the previous second fades
+#define NUM_LEDS_ON 4
+static uint8_t display[NUM_LEDS_ON] = {};
+
+
+void draw_display()
+{
+	led_on(display[0]); delay(32);
+	led_on(display[1]); delay(8);
+	led_on(display[2]); delay(2);
+	led_on(display[3]); delay(1);
+	led_off();
+}
+
 //! Main method.
 int main(void)
 {
@@ -164,12 +182,20 @@ int main(void)
 	// cycle through the LEDs
 	while(1)
 	{
-		led_on(60); delay(80);
-		led_on(61); delay(40);
-		led_on(63); delay(20);
-		led_on(64); delay(10);
-		led_on(65); delay(1);
+		int i, j;
 
-		led_off(); delay(2000);
+		for(i = 0 ; i < 6 ; i++)
+		{
+			display[0] = 60 + ((i + 0) % 6);
+			display[1] = 60 + ((i + 1) % 6);
+			display[2] = 60 + ((i + 2) % 6);
+			display[3] = 60 + ((i + 3) % 6);
+
+			for(j = 0 ; j < 1000 ; j++)
+			{
+				draw_display();
+				delay(1000);
+			}
+		}
 	}
 }
