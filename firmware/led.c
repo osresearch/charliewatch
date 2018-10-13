@@ -151,13 +151,17 @@ void delay(unsigned len)
 // the second is quarter bright
 // the previous second fades
 uint8_t led_display[] = {};
+uint8_t led_bright[] = {};
 
 
 void led_draw()
 {
-	led_on(led_display[0]); delay(16);
-	led_on(led_display[1]); delay(4);
-	led_on(led_display[2]); delay(2);
-	led_on(led_display[3]); delay(0);
+	int i;
+	for(i=0 ; i < NUM_DISPLAY ; i++)
+	{
+		led_on(led_display[i]);
+		delay(led_bright[i]);
+	}
+
 	led_off();
 }

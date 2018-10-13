@@ -1,9 +1,10 @@
 #pragma once
 
 // "Framebuffer" for the four LEDs that are on,
-// with decreasing brightness.
-#define NUM_LEDS_ON 4
-extern uint8_t led_display[NUM_LEDS_ON];
+// with configurable brightness.
+#define NUM_DISPLAY 3
+extern uint8_t led_display[NUM_DISPLAY];
+extern uint8_t led_bright[NUM_DISPLAY];
 
 // Draw the "framebuffer"
 void led_draw();

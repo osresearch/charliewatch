@@ -76,6 +76,8 @@ watchdog_timer(void)
 {
 	static int oldsec;
 	static int do_animation = 0;
+	static int hour_dir = +1;
+	static unsigned hour_bright = 255;
 
 	// cycle through the LEDs once per second
 	if (oldsec != RTCSEC)
@@ -85,17 +87,30 @@ watchdog_timer(void)
 
 		led_display[0] = RTCMIN;
 		led_display[1] = 60 + (RTCHOUR % 12);
-		led_display[2] = RTCMIN;
-		led_display[3] = RTCSEC;
+		led_display[2] = RTCSEC;
 
 		if (RTCMIN == RTCSEC)
 			do_animation = 60;
 	} else
 	if (do_animation)
 	{
-		led_display[3] = (led_display[3] + 1) % 60;
+		led_display[2] = (led_display[2] + 1) % 60;
 		do_animation--;
 	}
+
+	// make the hour "breath"
+	if (hour_bright == 255)
+		hour_dir = -1;
+	else
+	if (hour_bright == 0)
+		hour_dir = +1;
+
+	hour_bright += hour_dir;
+
+	// set the default brightnesses for minute and second
+	led_bright[0] = 32;
+	led_bright[1] = hour_bright / 8;
+	led_bright[2] = 0;
 
 	led_draw();
 }
