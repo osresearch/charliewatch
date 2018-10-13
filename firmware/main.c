@@ -12,10 +12,12 @@
 #include <stdlib.h>
 
 #include "rtc.h"
+#include "ucs.h"
 #include "led.h"
 
 //! Power On Self Test
-int post(void)
+static int
+post(void)
 {
 	return 0;
 }
@@ -31,6 +33,7 @@ int main(void)
 	PJOUT &= ~0xF;
 
 	rtc_init();
+	// ucs_init(); // doesn't work if crystal isn't there?
 
 	// Setup and enable WDT 16ms, ACLK, interval timer
 	WDTCTL = WDT_ADLY_16;

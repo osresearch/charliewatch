@@ -22,6 +22,7 @@ LDFLAGS += -mmcu=$(MCU)
 
 OBJS += main.o
 OBJS += led.o
+OBJS += ucs.o
 OBJS += rtc.o
 OBJS += rtcasm.o
 
