@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "rtc.h"
+
 //! Power On Self Test
 int post(void)
 {
@@ -179,23 +181,41 @@ int main(void)
 	PJDIR |=  0xF;
 	PJOUT &= ~0xF;
 
-	// cycle through the LEDs
+	rtc_init();
+
+	// Setup and enable WDT 16ms, ACLK, interval timer
+	WDTCTL = WDT_ADLY_16;
+	SFRIE1 |= WDTIE;
+
+	__bis_SR_register(LPM3_bits + GIE);        // Enter LPM3
+
+	// flash the 0 hour so that we know something is wrong
 	while(1)
 	{
-		int i, j;
-
-		for(i = 0 ; i < 6 ; i++)
-		{
-			display[0] = 60 + ((i + 0) % 6);
-			display[1] = 60 + ((i + 1) % 6);
-			display[2] = 60 + ((i + 2) % 6);
-			display[3] = 60 + ((i + 3) % 6);
-
-			for(j = 0 ; j < 1000 ; j++)
-			{
-				draw_display();
-				delay(1000);
-			}
-		}
+		led_on(60); delay(30000);
+		led_off(); delay(30000);
+		led_on(60); delay(30000);
+		led_off(); delay(60000);
 	}
+}
+
+//! Watchdog Timer interrupt service routine, calls back to handler functions.
+void __attribute__ ((interrupt(WDT_VECTOR)))
+watchdog_timer(void)
+{
+	static int oldsec;
+
+	// cycle through the LEDs once per second
+	if (oldsec != RTCSEC)
+	{
+		oldsec = RTCSEC;
+		const int i = oldsec % 6;
+
+		display[0] = 60 + ((i + 0) % 6);
+		display[1] = 60 + ((i + 1) % 6);
+		display[2] = 60 + ((i + 2) % 6);
+		display[3] = 60 + ((i + 3) % 6);
+	}
+
+	draw_display();
 }

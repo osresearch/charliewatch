@@ -17,10 +17,11 @@ CFLAGS += \
 	-MMD \
 	-MF .$(notdir $@).d \
 
-LDFLAGS += \
-	-mmcu=$(MCU) \
+ASFLAGS += -mmcu=$(MCU)
+LDFLAGS += -mmcu=$(MCU)
 
 OBJS += main.o
+OBJS += rtc.o rtcasm.o
 
 all: charliewatch.hex
 
