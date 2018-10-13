@@ -40,7 +40,6 @@ flash: charliewatch.elf
 	mspdebug \
 		$(PROGRAMMER) \
 		"prog $<" \
-		"run"
 
 dmesg:
 	$(BSL) -P goodwatch.hex -uD
