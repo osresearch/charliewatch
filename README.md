@@ -8,3 +8,26 @@ serial communication.
 
 v0.1 was ordered 2018-09-27, not yet tested.
 [Charliewtch schematic](datasheets/charliewatch.pdf)
+
+Programming cable
+-----
+
+From the top of the board:
+* RST / TDIO
+* RXD on programmer
+* TXD on programmer
+* VCC
+* TST / TCK
+* GND
+
+There is also a four-wire setup that might simplify the wiring.
+Travis documents it and the power consumption here:
+https://github.com/travisgoodspeed/goodwatch/wiki/EnergyTrace
+
+Bricked Launchpad
+-----
+
+If you brick your launchpad by running Energia under Linux, it will no
+longer program the Charliewatch.  The other weirdness is that `tilib`
+can detect the device, but can't write to it unless run as root.
+
