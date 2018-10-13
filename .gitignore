@@ -3,3 +3,8 @@
 .*lck
 *.pro
 pcb/routed.sch
+.*.d
+*.o
+*.elf
+*.hex
+.*.swp
