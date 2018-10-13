@@ -144,9 +144,9 @@ static void led_off()
 }
 	
 
-static void delay(uint32_t len)
+static void delay(unsigned len)
 {
-	volatile uint32_t i;
+	volatile unsigned i;
 	for(i = 0 ; i < len ; i++)
 		;
 }
@@ -164,11 +164,12 @@ int main(void)
 	// cycle through the LEDs
 	while(1)
 	{
-		led_on(60); delay(10000);
-		led_on(61); delay(10000);
-		led_on(63); delay(10000);
-		led_on(64); delay(10000);
-		led_on(65); delay(10000);
+		led_on(60); delay(80);
+		led_on(61); delay(40);
+		led_on(63); delay(20);
+		led_on(64); delay(10);
+		led_on(65); delay(1);
+
 		led_off(); delay(2000);
 	}
 }
