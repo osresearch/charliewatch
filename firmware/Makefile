@@ -4,6 +4,9 @@ PORT ?= /dev/ttyACM0
 # The Charliewatch uses the CC430 5-variant with no LCD controller
 MCU ?= cc430f5137
 
+# Currently we're flashing with a launchpad board
+PROGRAMMER ?= rf2500
+
 #Standard Debian gcc-msp430 and msp430mcu packages.
 CC = msp430-gcc
 CFLAGS += \
@@ -13,6 +16,9 @@ CFLAGS += \
 	-Os \
 	-MMD \
 	-MF .$(notdir $@).d \
+
+LDFLAGS += \
+	-mmcu=$(MCU) \
 
 OBJS += main.o
 
@@ -31,10 +37,10 @@ erase:
 	$(BSL) -e
 
 flash: charliewatch.elf
-	msp430debug \
+	mspdebug \
 		$(PROGRAMMER) \
-		-d $(PORT) \
-		"prog $<"
+		"prog $<" \
+		"run"
 
 dmesg:
 	$(BSL) -P goodwatch.hex -uD
