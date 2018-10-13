@@ -12,13 +12,13 @@
 //Automatically generated, not a part of the git repo.
 //#include "buildtime.h"
 
-//! ROM copy of the manufacturing time.
-static const unsigned char romsavetime[] = { BUILDTIME };
+//! ROM copy of the manufacturing time is generated at build time
+extern const unsigned char romsavetime[];
 
 //! If this is 0xdeadbeef, the ram time is good.
 static unsigned long magicword __attribute__ ((section (".noinit")));
 //! Time and date, in case of a reboot.
-static unsigned char ramsavetime[sizeof(romsavetime)] __attribute__ ((section (".noinit")));
+static unsigned char ramsavetime[8] __attribute__ ((section (".noinit")));
 
 #ifdef CONFIG_ALARM
 // Alarm tone status

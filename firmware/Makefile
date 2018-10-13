@@ -26,11 +26,14 @@ OBJS += led.o
 OBJS += ucs.o
 OBJS += rtc.o
 OBJS += rtcasm.o
+OBJS += buildtime.o
 
 all: charliewatch.hex
 
 charliewatch.elf: $(OBJS)
 	$(CC) $(LDFLAGS) -T msp430.x -o $@ $^
+
+buildtime.o: FORCE
 
 %.hex: %.elf
 	msp430-objcopy -O ihex $< $@
@@ -75,4 +78,5 @@ energytrace.txt: goodwatch.hex sbwflash
 	gnuplot energytrace-txt.gnuplot
 	../bin/batterylife.py <energytrace.txt
 
+FORCE:
 -include .*.o.d
