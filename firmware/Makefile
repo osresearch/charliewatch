@@ -7,6 +7,10 @@ MCU ?= cc430f5137
 # Currently we're flashing with a launchpad board
 PROGRAMMER ?= rf2500
 
+# Create an array of the current y/m/d h:m:s
+# The -100 is to avoid octal constant issues with leading zeros
+BUILDTIME := $(shell date "+%y,%m,%d,1%H-100,1%M-100,1%S-100")
+
 #Standard Debian gcc-msp430 and msp430mcu packages.
 CC = msp430-gcc
 CFLAGS += \
@@ -16,7 +20,7 @@ CFLAGS += \
 	-Os \
 	-MMD \
 	-MF .$(notdir $@).d \
-	-DBUILDTIME=`date "+%y,%m,%d,%H,%M,%S"`
+	-DBUILDTIME=$(BUILDTIME) \
 
 ASFLAGS += -mmcu=$(MCU)
 LDFLAGS += -mmcu=$(MCU)
