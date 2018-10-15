@@ -14,13 +14,7 @@
 #include "rtc.h"
 #include "ucs.h"
 #include "led.h"
-
-//! Power On Self Test
-static int
-post(void)
-{
-	return 0;
-}
+#include "power.h"
 
 
 //! Main method.
@@ -39,6 +33,10 @@ int main(void)
 	// Setup and enable WDT 16ms, ACLK, interval timer
 	WDTCTL = WDT_ADLY_16;
 	SFRIE1 |= WDTIE;
+
+	// go into low power mode
+	power_setvcore(0);
+	ucs_slow();
 
 	__bis_SR_register(LPM3_bits + GIE);        // Enter LPM3
 

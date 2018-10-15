@@ -30,6 +30,7 @@ OBJS += led.o
 OBJS += ucs.o
 OBJS += rtc.o
 OBJS += rtcasm.o
+OBJS += power.o
 OBJS += buildtime.o
 
 all: charliewatch.hex
