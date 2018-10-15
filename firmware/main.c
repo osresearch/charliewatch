@@ -75,6 +75,7 @@ watchdog_timer(void)
 	static int oldsec;
 	static int do_second_animation = 0;
 	static int do_minute_animation = 0;
+	static int do_hour_animation = 0;
 	static int do_sparkle_animation = 0;
 	static int hour_dir;
 	static unsigned hour_bright = 0;
@@ -93,7 +94,9 @@ watchdog_timer(void)
 		led_display[1] = 60 + (RTCHOUR % 12);
 		led_display[2] = RTCSEC;
 
-		if (RTCMIN == RTCSEC && RTCMIN == 5 * (RTCHOUR % 12))
+		const unsigned hour_five = 5 * (RTCHOUR % 12);
+
+		if (RTCMIN == RTCSEC && RTCMIN == hour_five)
 		{
 			// when the hour, minute and second hands line up
 			do_sparkle_animation = 240;
@@ -111,6 +114,10 @@ watchdog_timer(void)
 			// when the second hand hits the minute hand,
 			// animate the second hand for one revolution
 			do_second_animation = 60;
+		} else
+		if (RTCSEC == hour_five)
+		{
+			do_hour_animation = 12 * 4;
 		}
 	}
 
@@ -127,11 +134,17 @@ watchdog_timer(void)
 			led_display[0] = (led_display[0] + 60 - 1) % 60;
 		do_minute_animation--;
 	}
+	if (do_hour_animation)
+	{
+		if (0 == (do_hour_animation & 3))
+			led_display[1] = 60 + (led_display[1] - 60 - 1 + 12) % 12;
+		do_hour_animation--;
+	}
 	if (do_sparkle_animation)
 	{
 		led_display[0] = rand() % 60;
-		led_display[1] = rand() % 60;
-		led_display[2] = 60 + (rand() % 60);
+		led_display[1] = 60 + rand() % 12;
+		led_display[2] = rand() % 60;
 		do_sparkle_animation--;
 	}
 
