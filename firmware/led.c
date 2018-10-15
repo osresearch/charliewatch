@@ -139,9 +139,11 @@ void led_off()
 
 void delay(unsigned len)
 {
-	volatile unsigned i;
-	for(i = 0 ; i < len ; i++)
-		;
+	while(len)
+	{
+		asm(""); // ensure that the loop executes
+		len--;
+	}
 }
 
 
