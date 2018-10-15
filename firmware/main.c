@@ -137,7 +137,7 @@ watchdog_timer(void)
 	if (do_hour_animation)
 	{
 		if (0 == (do_hour_animation & 3))
-			led_display[1] = 60 + (led_display[1] - 60 - 1 + 12) % 12;
+			led_display[1] = 60 + (led_display[1] - 60 + 1 + 12) % 12;
 		do_hour_animation--;
 	}
 	if (do_sparkle_animation)
