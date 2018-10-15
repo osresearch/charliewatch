@@ -75,31 +75,68 @@ void __attribute__ ((interrupt(WDT_VECTOR)))
 watchdog_timer(void)
 {
 	static int oldsec;
-	static int do_animation = 0;
-	static int hour_dir = +1;
-	static unsigned hour_bright = 255;
+	static int do_second_animation = 0;
+	static int do_minute_animation = 0;
+	static int do_sparkle_animation = 0;
+	static int hour_dir;
+	static unsigned hour_bright = 0;
 
-	// cycle through the LEDs once per second
-	if (oldsec != RTCSEC)
+	// update the LEDs once per second
+	if (oldsec != RTCSEC
+	&& !do_minute_animation
+	&& !do_second_animation
+	&& !do_sparkle_animation)
 	{
 		oldsec = RTCSEC;
-		const int i = oldsec % 6;
 
 		led_display[0] = RTCMIN;
 		led_display[1] = 60 + (RTCHOUR % 12);
 		led_display[2] = RTCSEC;
 
+		if (RTCMIN == 0 && RTCSEC == 0)
+		{
+			// at the top of each hour, sparkle for three seconds
+			do_sparkle_animation = 180;
+		} else
+		if (RTCSEC == 0 && (RTCMIN % 5) == 0)
+		{
+			// every five minutes
+			// wrap the second hand twice
+			// and the minute hand at half speed.
+			do_minute_animation = 120;
+			do_second_animation = 120;
+		} else
 		if (RTCMIN == RTCSEC)
-			do_animation = 60;
-	} else
-	if (do_animation)
+		{
+			// when the second hand hits the minute hand,
+			// animate the second hand for one revolution
+			do_second_animation = 60;
+		}
+	}
+
+	if (do_second_animation)
 	{
+		// run the second hand forwards at a fast speed
 		led_display[2] = (led_display[2] + 1) % 60;
-		do_animation--;
+		do_second_animation--;
+	}
+	if (do_minute_animation)
+	{
+		// run the minute hand backwards at half speed
+		if (0 == (do_minute_animation & 1))
+			led_display[0] = (led_display[0] + 60 - 1) % 60;
+		do_minute_animation--;
+	}
+	if (do_sparkle_animation)
+	{
+		led_display[0] = rand() % 60;
+		led_display[1] = rand() % 60;
+		led_display[2] = 60 + (rand() % 60);
+		do_sparkle_animation--;
 	}
 
 	// make the hour "breath"
-	if (hour_bright == 255)
+	if (hour_bright == 32*4)
 		hour_dir = -1;
 	else
 	if (hour_bright == 0)
@@ -109,7 +146,7 @@ watchdog_timer(void)
 
 	// set the default brightnesses for minute and second
 	led_bright[0] = 32;
-	led_bright[1] = hour_bright / 8;
+	led_bright[1] = hour_bright / 4;
 	led_bright[2] = 0;
 
 	led_draw();
