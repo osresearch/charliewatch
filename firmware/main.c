@@ -81,6 +81,8 @@ watchdog_timer(void)
 	static int hour_dir;
 	static unsigned hour_bright = 0;
 
+	ucs_fast();
+
 	// update the LEDs once per second
 	if (oldsec != RTCSEC
 	&& !do_minute_animation
@@ -145,9 +147,10 @@ watchdog_timer(void)
 	hour_bright += hour_dir;
 
 	// set the default brightnesses for minute and second
-	led_bright[0] = 32;
+	led_bright[0] = 48;
 	led_bright[1] = hour_bright / 4;
 	led_bright[2] = 0;
 
 	led_draw();
+	ucs_slow();
 }
