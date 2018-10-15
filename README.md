@@ -31,3 +31,10 @@ If you brick your launchpad by running Energia under Linux, it will no
 longer program the Charliewatch.  The other weirdness is that `tilib`
 can detect the device, but can't write to it unless run as root.
 
+Energy Trace
+----
+* `libmsp430.so`: https://dlbeer.co.nz/articles/slac460y/index.html
+* https://github.com/carrotIndustries/energytrace-util
+* Have to update path to `MSP430.h` from the `slac/DLL430_v3/include` directory
+
+
