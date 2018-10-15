@@ -93,10 +93,10 @@ watchdog_timer(void)
 		led_display[1] = 60 + (RTCHOUR % 12);
 		led_display[2] = RTCSEC;
 
-		if (RTCMIN == 0 && RTCSEC == 0)
+		if (RTCMIN == RTCSEC && RTCMIN == 5 * (RTCHOUR % 12))
 		{
-			// at the top of each hour, sparkle for three seconds
-			do_sparkle_animation = 180;
+			// when the hour, minute and second hands line up
+			do_sparkle_animation = 240;
 		} else
 		if (RTCSEC == 0 && (RTCMIN % 5) == 0)
 		{
