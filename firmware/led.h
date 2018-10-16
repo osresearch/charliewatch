@@ -9,6 +9,8 @@ extern uint8_t led_bright[NUM_DISPLAY];
 // Draw the "framebuffer"
 void led_draw();
 
+void animation_draw();
+
 // Raw method to turn on an LED
 void led_on(uint8_t i);
 

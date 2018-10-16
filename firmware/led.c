@@ -135,35 +135,3 @@ void led_off()
 	P3DIR = 0xFF;
 	P2DIR = 0xFF;
 }
-	
-
-void delay(unsigned len)
-{
-	while(len)
-	{
-		asm(""); // ensure that the loop executes
-		len--;
-	}
-}
-
-
-// In normal operation there are four LEDs powered on
-// The minute is full bright
-// The hour is half bright
-// the second is quarter bright
-// the previous second fades
-uint8_t led_display[] = {};
-uint8_t led_bright[] = {};
-
-
-void led_draw()
-{
-	int i;
-	for(i=0 ; i < NUM_DISPLAY ; i++)
-	{
-		led_on(led_display[i]);
-		delay(led_bright[i]);
-	}
-
-	led_off();
-}
