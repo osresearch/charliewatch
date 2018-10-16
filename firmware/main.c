@@ -22,9 +22,14 @@ int main(void)
 {
 	WDTCTL = WDTPW + WDTHOLD; // Stop WDT
 
-	// drive port J to ground to avoid CMOS power drain
+	// drive port J and 1 to ground to avoid CMOS power drain
 	PJDIR |=  0xF;
 	PJOUT &= ~0xF;
+	P1DIR |=  0xF;
+	P1OUT &= ~0xF;
+
+	// turn off all the LEDs to reduce power
+	led_off();
 
 #if 1
 	rtc_init();
