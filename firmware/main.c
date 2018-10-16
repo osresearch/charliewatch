@@ -79,5 +79,6 @@ watchdog_timer(void)
 {
 	ucs_fast();
 	animation_draw();
+	led_off();
 	ucs_slow();
 }
