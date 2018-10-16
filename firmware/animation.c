@@ -90,7 +90,7 @@ void hour_animation(unsigned count)
 	led_display[2] = RTCSEC;
 
 	// run the hour forward
-	if (0 == (count & 3))
+	if (0 == (count % 5))
 		led_display[1] = 60 + (led_display[1] - 60 + 1 + 12) % 12;
 
 	led_draw();
@@ -170,7 +170,7 @@ void animation_draw()
 		if (RTCSEC == hour_five)
 		{
 			// second hand aligns with the hour hand
-			do_hour_animation = 12 * 4;
+			do_hour_animation = 60;
 		}
 	}
 
@@ -214,8 +214,8 @@ void animation_draw()
 	hour_bright += hour_dir;
 
 	// set the default brightnesses for minute and second
-	led_bright[0] = 48;
-	led_bright[1] = hour_bright / 4;
+	led_bright[0] = 32;
+	led_bright[1] = (hour_bright / 4);
 	led_bright[2] = 0;
 
 	led_draw();
