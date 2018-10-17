@@ -16,6 +16,7 @@ CC = msp430-gcc
 CFLAGS += \
 	-mmcu=$(MCU) \
 	-Wall \
+	-Werror \
 	-I. \
 	-Os \
 	-MMD \

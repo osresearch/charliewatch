@@ -179,5 +179,7 @@ int power_setvcore (int level) {
 	 origlevel,
 	 PMMCTL0 & PMMCOREV_3);
 */
+  (void) origlevel;
+
   return status;
 }

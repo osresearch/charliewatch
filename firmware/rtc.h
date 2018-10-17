@@ -3,7 +3,7 @@
 */
 
 //! Flash buffer containing the manufacturing time.
-extern unsigned char *romsavetime;
+extern const unsigned char romsavetime[];
 
 //! Configure the Real Time Clock
 void rtc_init();

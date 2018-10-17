@@ -6,6 +6,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "rtc.h"
+#include "rtcasm.h"
+
 //#include "api.h"
 //#include "apps/calibrate.h"
 
@@ -41,9 +44,10 @@ static void rtc_savetime(){
 //! Load the time from RAM or ROM
 static void rtc_loadtime(){
   //Use the RAM copy if it is reasonable.
-  if(magicword!=0xdeadbeef){
+ //it is never reasonable
+  //if(magicword!=0xdeadbeef){
     memcpy(ramsavetime,romsavetime,sizeof(ramsavetime));
-  }
+  //}
   
   /* We need to call these functions for safety, as there are some
      awful RTC errata to work around. */
@@ -56,6 +60,10 @@ static void rtc_loadtime(){
   SetRTCDAY(ramsavetime[2]);
   //printf("Setting RTCDAY to %d yielded %d.\n",
   //ramsavetime[7], RTCDAY);
+
+  //SetRTCHOUR(5);
+  //SetRTCMIN(59);
+  //SetRTCSEC(45);
 }
 
 
