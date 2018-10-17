@@ -19,11 +19,29 @@ Animations are drawn:
 
 void delay(unsigned len)
 {
+#if 0
+	const uint8_t p2 = P2OUT;
+	const uint8_t p3 = P3OUT;
+
 	while(len)
 	{
-		asm(""); // ensure that the loop executes
+		// toggle the LEDs back on
+		P2OUT = p2;
+		P3OUT = p3;
+		len--;
+
+		// now toggle them off
+		P2OUT = 0;
+		P3OUT = 0;
+	}
+#else
+	len *= 2;
+	while(len)
+	{
+		asm("");
 		len--;
 	}
+#endif
 }
 
 
@@ -38,10 +56,17 @@ uint8_t led_bright[] = {};
 void led_draw()
 {
 	int i;
+
 	for(i=0 ; i < NUM_DISPLAY ; i++)
 	{
-		led_on(led_display[i]);
-		delay(led_bright[i]);
+		const unsigned bright = led_bright[i];
+		if (bright > 0)
+			led_on(led_display[i]);
+
+		if (bright > 1)
+			delay(bright);
+		else
+			led_off();
 	}
 
 	led_off();
@@ -210,18 +235,17 @@ void animation_draw()
 	}
 
 	// make the hour "breath"
-	if (hour_bright == 32*4)
+	hour_bright += hour_dir;
+	if (hour_bright == 16*8)
 		hour_dir = -1;
 	else
-	if (hour_bright == 0)
+	if (hour_bright <= 8)
 		hour_dir = +1;
 
-	hour_bright += hour_dir;
-
 	// set the default brightnesses for minute and second
-	led_bright[0] = 32;
-	led_bright[1] = (hour_bright / 4);
-	led_bright[2] = 0;
+	led_bright[0] = 16;
+	led_bright[1] = (hour_bright / 8) + 1;
+	led_bright[2] = 1;
 
 	led_draw();
 }
