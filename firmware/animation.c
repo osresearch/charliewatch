@@ -106,6 +106,11 @@ void minute_animation(unsigned count)
 	// run the second hand forward at full speed
 	led_display[2] = (led_display[2] + 1) % 60;
 
+	// if this occured at the start of a new hour,
+	// run an hour hand animation, too
+	if (RTCMIN == 0 && (count % 5) == 0)
+		led_display[1] = 60 + (led_display[1] - 60 - 1 + 12) % 12;
+
 	led_draw();
 }
 
