@@ -53,7 +53,7 @@ void delay(unsigned len)
 uint8_t led_display[] = {};
 uint8_t led_bright[] = {};
 
-void led_draw()
+void led_draw(void)
 {
 	int i;
 
@@ -75,12 +75,31 @@ void led_draw()
 
 void sparkle_animation(unsigned count)
 {
+#if 0
 	// should make the sparkles converge inward
-	(void) count;
-	led_on(rand() % 60);
-	led_on(rand() % 60);
+	led_on((RTCSEC + rand() % (count/8) - count/16 + 240) % 60);
+	led_on((RTCMIN + rand() % (count/8) - count/16 + 240) % 60);
+	led_on((RTCHOUR*5 + rand() % (count/8) - count/16 + 240) % 60);
 	led_on(rand() % 60);
 	led_on(60 + (rand() % 12));
+#else
+	unsigned i;
+	if (count > 72)
+		count = 12;
+	else
+		count /= 8;
+
+	for(i = 0 ; i < count ; i++)
+		led_on(rand() % 72);
+
+	// start turning on the hands
+	if (count < 20)
+	{
+		led_on(led_display[0]);
+		led_on(led_display[1]);
+		led_on(RTCSEC);
+	}
+#endif
 }
 
 // animation for when all the hands align
@@ -108,6 +127,44 @@ void align_animation(unsigned count)
 		for(i=0 ; i < count/5 ; i ++)
 			led_on(60 + (RTCHOUR + i) % 12);
 	}
+}
+
+// rotate all three together
+void triangle_animation(unsigned count)
+{
+	led_on((RTCSEC + 120 - count) % 60);
+	led_on((RTCMIN + 120 - count) % 60);
+	led_on((RTCHOUR*5 + 120 - count) % 60);
+
+	// and keep the actual hour on
+	led_on(led_display[1]);
+
+	//led_display[0] = (led_display[0] + 1) % 60;
+	//led_display[2] = (led_display[2] + 1) % 60;
+	//led_display[1] = 60 + (led_display[1] + 1 - 60) % 12;
+
+	// advance the hour every five steps
+	//if (count % 5 == 0)
+
+	//led_draw();
+
+/*
+	unsigned i;
+	const unsigned hour = RTCHOUR % 12;
+	const unsigned width = count > 60 ? (120 - count)/3 : count / 3;
+
+	// draw out from the hour, minute, second
+	for(i=0 ; i < width ; i++)
+	{
+		led_on((RTCMIN + i + 60) % 60);
+		led_on((RTCMIN - i + 60) % 60);
+		led_on((RTCSEC + i + 60) % 60);
+		led_on((RTCSEC - i + 60) % 60);
+		led_on((RTCSEC - i + 60) % 60);
+		led_on(60 + (hour + i/2 + 12) % 12);
+		led_on(60 + (hour - i/2 + 12) % 12);
+	}
+*/
 }
 
 void hour_animation(unsigned count)
@@ -148,6 +205,36 @@ void second_animation(unsigned count)
 	led_draw();
 }
 
+
+static int triangle_time(int a, int b, int c)
+{
+	if (a % 5 != 0 || b % 5 != 0)
+		return 0;
+	// 0, 20, 40 => 20, 40
+	// 0, 40, 20 => 40, 20
+	// 20, 0, 40 => -20, 20
+	// 40, 0, 20 => -40, -20
+	// 40, 20, 0 => -20, -40,
+	// 20, 40, 0 => 20, -20
+
+	int d1 = b - a;
+	int d2 = c - a;
+	if (d1 == 20 && d2 == 40)
+		return 1;
+	if (d1 == 40 && d2 == 20)
+		return 1;
+	if (d1 == -20 && d2 == -40)
+		return 1;
+	if (d1 == -40 && d2 == -20)
+		return 1;
+	if (d1 == -20 && d2 == 20)
+		return 1;
+	if (d1 == 20 && d2 == -20)
+		return 1;
+
+	return 0;
+}
+
 void animation_draw()
 {
 	static int oldsec;
@@ -155,6 +242,7 @@ void animation_draw()
 	static int do_minute_animation = 0;
 	static int do_hour_animation = 0;
 	static int do_align_animation = 0;
+	static int do_triangle_animation = 0;
 	static int do_sparkle_animation = 0;
 	static int hour_dir;
 	static unsigned hour_bright = 0;
@@ -163,6 +251,7 @@ void animation_draw()
 	if (oldsec != RTCSEC
 	&& !do_minute_animation
 	&& !do_second_animation
+	&& !do_triangle_animation
 	&& !do_sparkle_animation)
 	{
 		oldsec = RTCSEC;
@@ -197,6 +286,10 @@ void animation_draw()
 			// run the second hand forwards
 			do_second_animation = 60;
 		} else
+		if (triangle_time(RTCMIN, RTCSEC, hour_five))
+		{
+			do_triangle_animation = 120;
+		} else
 		if (RTCSEC == hour_five)
 		{
 			// second hand aligns with the hour hand
@@ -207,6 +300,12 @@ void animation_draw()
 	if (do_sparkle_animation)
 	{
 		sparkle_animation(do_sparkle_animation--);
+		return;
+	}
+
+	if (do_triangle_animation)
+	{
+		triangle_animation(do_triangle_animation--);
 		return;
 	}
 
