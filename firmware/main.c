@@ -29,6 +29,13 @@ int main(void)
 	P1DIR |=  0xF;
 	P1OUT &= ~0xF;
 
+	// configure button as I/O with internal pullup
+	// (v0.1 is reusing the RX pin)
+	P1SEL &= ~(1 << 5);
+	P1DIR &= ~(1 << 5);
+	P1REN |=  (1 << 5);
+	P1OUT |=  (1 << 5);
+
 	// turn off all the LEDs to reduce power
 	led_off();
 
