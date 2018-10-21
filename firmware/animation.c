@@ -73,7 +73,7 @@ void led_draw(void)
 }
 
 
-void sparkle_animation(unsigned count)
+static void sparkle_animation(unsigned count)
 {
 #if 0
 	// should make the sparkles converge inward
@@ -103,7 +103,7 @@ void sparkle_animation(unsigned count)
 }
 
 // animation for when all the hands align
-void align_animation(unsigned count)
+static void align_animation(unsigned count)
 {
 	unsigned i;
 
@@ -129,8 +129,39 @@ void align_animation(unsigned count)
 	}
 }
 
+
+// when the second hand lines up with the hour and the minute
+// is 180 degrees away
+static void opposite_animation(unsigned count)
+{
+	unsigned i;
+
+	if (count >= 60)
+	{
+		// grow the bargraph between the two points until they meet
+		count = (120 - count) / 2;
+		for(i = 0 ; i < count ; i++)
+		{
+			led_on((RTCSEC + i) % 60);
+			led_on((RTCMIN + i) % 60);
+		}
+	} else
+	{
+		// retract the bargraph between the two
+		count /= 2;
+		for(i = 0 ; i < count ; i++)
+		{
+			led_on((RTCSEC - i + 60) % 60);
+			led_on((RTCMIN - i + 60) % 60);
+		}
+	}
+
+	// and keep the actual hour on
+	led_on(led_display[1]);
+}
+
 // rotate all three together
-void triangle_animation(unsigned count)
+static void triangle_animation(unsigned count)
 {
 	const unsigned hour = (RTCHOUR % 12) * 5;
 	unsigned i;
@@ -169,7 +200,7 @@ void triangle_animation(unsigned count)
 	led_on(led_display[1]);
 }
 
-void hour_animation(unsigned count)
+static void hour_animation(unsigned count)
 {
 	led_display[2] = RTCSEC;
 
@@ -181,7 +212,7 @@ void hour_animation(unsigned count)
 }
 
 
-void minute_animation(unsigned count)
+static void minute_animation(unsigned count)
 {
 	// run the minute hand backwards at half speed
 	if (0 == (count & 1))
@@ -199,7 +230,7 @@ void minute_animation(unsigned count)
 }
 
 
-void second_animation(unsigned count)
+static void second_animation(unsigned count)
 {
 	// run the second hand forward at full speed
 	led_display[2] = (led_display[2] + 1) % 60;
@@ -208,6 +239,7 @@ void second_animation(unsigned count)
 }
 
 
+// Determine if all three hands are 120 degrees apart
 static int triangle_time(int a, int b, int c)
 {
 	if (a % 5 != 0 || b % 5 != 0)
@@ -240,21 +272,20 @@ static int triangle_time(int a, int b, int c)
 void animation_draw()
 {
 	static int oldsec;
-	static int do_second_animation = 0;
-	static int do_minute_animation = 0;
-	static int do_hour_animation = 0;
-	static int do_align_animation = 0;
-	static int do_triangle_animation = 0;
-	static int do_sparkle_animation = 0;
 	static int hour_dir;
 	static unsigned hour_bright = 0;
 
-	// update the LEDs once per second
-	if (oldsec != RTCSEC
-	&& !do_minute_animation
-	&& !do_second_animation
-	&& !do_triangle_animation
-	&& !do_sparkle_animation)
+	static unsigned animation_counter = 0;
+	static void (*animation)(unsigned counter) = NULL;
+
+	if (animation_counter)
+	{
+		animation(animation_counter--);
+		return;
+	}
+
+	// we're not doing an animation, check for a second update
+	if (oldsec != RTCSEC)
 	{
 		oldsec = RTCSEC;
 
@@ -267,12 +298,14 @@ void animation_draw()
 		if (RTCMIN == 0 && RTCSEC == 0 && hour_five == 0)
 		{
 			// midnight or noon, draw the sparkles
-			do_sparkle_animation = 240;
+			animation_counter = 240;
+			animation = sparkle_animation;
 		} else
 		if (RTCMIN == RTCSEC && RTCMIN == hour_five)
 		{
 			// when the hour, minute and second hands line up
-			do_align_animation = 120;
+			animation_counter = 120;
+			animation = align_animation;
 		} else
 		if (RTCSEC == RTCMIN && (RTCMIN % 5) == 0)
 		{
@@ -280,60 +313,34 @@ void animation_draw()
 			// every five minutes
 			// wrap the second hand twice
 			// and the minute hand at half speed.
-			do_minute_animation = 120;
+			animation_counter = 120;
+			animation = minute_animation;
 		} else
 		if (RTCMIN == RTCSEC)
 		{
 			// when the second hand hits the minute hand,
 			// run the second hand forwards
-			do_second_animation = 60;
+			animation_counter = 60;
+			animation = second_animation;
+		} else
+		if (RTCMIN == (RTCSEC + 30) % 60 && RTCSEC == hour_five)
+		{
+			animation_counter = 120;
+			animation = opposite_animation;
 		} else
 		if (triangle_time(RTCMIN, RTCSEC, hour_five))
 		{
-			do_triangle_animation = 120;
+			animation_counter = 120;
+			animation = triangle_animation;
 		} else
 		if (RTCSEC == hour_five)
 		{
 			// second hand aligns with the hour hand
-			do_hour_animation = 60;
+			animation_counter = 60;
+			animation = hour_animation;
 		}
 	}
 
-	if (do_sparkle_animation)
-	{
-		sparkle_animation(do_sparkle_animation--);
-		return;
-	}
-
-	if (do_triangle_animation)
-	{
-		triangle_animation(do_triangle_animation--);
-		return;
-	}
-
-	if (do_align_animation)
-	{
-		align_animation(do_align_animation--);
-		return;
-	}
-
-	if (do_hour_animation)
-	{
-		hour_animation(do_hour_animation--);
-		return;
-	}
-
-	if (do_minute_animation)
-	{
-		minute_animation(do_minute_animation--);
-		return;
-	}
-
-	if (do_second_animation)
-	{
-		second_animation(do_second_animation--);
-		return;
-	}
 
 	// make the hour "breath"
 	hour_bright += hour_dir;
