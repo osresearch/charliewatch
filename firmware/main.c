@@ -15,6 +15,7 @@
 #include "ucs.h"
 #include "led.h"
 #include "power.h"
+#include "stopwatch.h"
 
 
 //! Main method.
@@ -78,7 +79,8 @@ void __attribute__ ((interrupt(WDT_VECTOR)))
 watchdog_timer(void)
 {
 	ucs_fast();
-	animation_draw();
+	//animation_draw();
+	stopwatch_draw();
 	led_off();
 	ucs_slow();
 }
