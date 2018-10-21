@@ -132,39 +132,41 @@ void align_animation(unsigned count)
 // rotate all three together
 void triangle_animation(unsigned count)
 {
-	led_on((RTCSEC + 120 - count) % 60);
-	led_on((RTCMIN + 120 - count) % 60);
-	led_on((RTCHOUR*5 + 120 - count) % 60);
+	const unsigned hour = (RTCHOUR % 12) * 5;
+	unsigned i;
+
+	if (RTCSEC < RTCMIN)
+	{
+		// spin all three around twice
+		led_on((RTCSEC + 120 - count) % 60);
+		led_on((RTCMIN + 120 - count) % 60);
+		led_on((hour + 120 - count) % 60);
+
+	} else
+	if (count >= 60)
+	{
+		// grow the bargraph between the three points
+		count = (120 - count) / 3;
+		for(i = 0 ; i < count ; i++)
+		{
+			led_on((RTCSEC + i) % 60);
+			led_on((RTCMIN + i) % 60);
+			led_on((hour + i) % 60);
+		}
+	} else
+	{
+		// retract the bargraph to the three
+		count /= 3;
+		for(i = 0 ; i < count ; i++)
+		{
+			led_on((RTCSEC - i + 60) % 60);
+			led_on((RTCMIN - i + 60) % 60);
+			led_on((hour - i + 60) % 60);
+		}
+	}
 
 	// and keep the actual hour on
 	led_on(led_display[1]);
-
-	//led_display[0] = (led_display[0] + 1) % 60;
-	//led_display[2] = (led_display[2] + 1) % 60;
-	//led_display[1] = 60 + (led_display[1] + 1 - 60) % 12;
-
-	// advance the hour every five steps
-	//if (count % 5 == 0)
-
-	//led_draw();
-
-/*
-	unsigned i;
-	const unsigned hour = RTCHOUR % 12;
-	const unsigned width = count > 60 ? (120 - count)/3 : count / 3;
-
-	// draw out from the hour, minute, second
-	for(i=0 ; i < width ; i++)
-	{
-		led_on((RTCMIN + i + 60) % 60);
-		led_on((RTCMIN - i + 60) % 60);
-		led_on((RTCSEC + i + 60) % 60);
-		led_on((RTCSEC - i + 60) % 60);
-		led_on((RTCSEC - i + 60) % 60);
-		led_on(60 + (hour + i/2 + 12) % 12);
-		led_on(60 + (hour - i/2 + 12) % 12);
-	}
-*/
 }
 
 void hour_animation(unsigned count)
