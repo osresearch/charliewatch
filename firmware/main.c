@@ -16,7 +16,6 @@
 #include "led.h"
 #include "power.h"
 #include "button.h"
-#include "stopwatch.h"
 
 
 //! Main method.
@@ -78,13 +77,19 @@ int main(void)
 }
 
 
+extern void stopwatch_draw(void);
+extern void clockset_draw(void);
+extern void animation_draw(void);
+
 static void (*const modes[])(void) = {
 	animation_draw,
 	stopwatch_draw,
+	clockset_draw,
+	clockset_draw,
 };
 
 static const unsigned mode_count = sizeof(modes) / sizeof(*modes);
-unsigned mode = 0;
+unsigned watch_mode = 0;
 
 
 //! Watchdog Timer interrupt service routine, calls back to handler functions.
@@ -97,9 +102,9 @@ watchdog_timer(void)
 
 	// long hold advances mode
 	if (button_long)
-		mode = (mode + 1) % mode_count;
+		watch_mode = (watch_mode + 1) % mode_count;
 
-	modes[mode]();
+	modes[watch_mode]();
 
 	led_off();
 	ucs_slow();

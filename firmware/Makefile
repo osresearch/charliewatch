@@ -31,6 +31,7 @@ OBJS += led.o
 OBJS += button.o
 OBJS += animation.o
 OBJS += stopwatch.o
+OBJS += clockset.o
 OBJS += ucs.o
 OBJS += rtc.o
 OBJS += rtcasm.o
