@@ -13,6 +13,8 @@
 
 static unsigned running = 1;
 static uint32_t counter; // in ms
+static unsigned timeout;
+extern unsigned watch_mode;
 
 
 // called every 16ms by the RTC interrupt
@@ -20,6 +22,8 @@ void stopwatch_draw()
 {
 	if (button_short)
 	{
+		timeout = 0;
+
 		if (running)
 		{
 			// stop the counter
@@ -36,10 +40,16 @@ void stopwatch_draw()
 		// we have just entered this mode
 		running = 0;
 		counter = 0;
+		timeout = 0;
 	}
 
 	if (running)
 		counter += 16;
+	else
+		timeout++;
+
+	if (timeout > 30 * 60)
+		watch_mode = 0;
 
 	uint32_t c = counter;
 	const unsigned ms = c % 1000;
