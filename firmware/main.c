@@ -15,6 +15,7 @@
 #include "ucs.h"
 #include "led.h"
 #include "power.h"
+#include "button.h"
 #include "stopwatch.h"
 
 
@@ -29,12 +30,8 @@ int main(void)
 	P1DIR |=  0xF;
 	P1OUT &= ~0xF;
 
-	// configure button as I/O with internal pullup
-	// (v0.1 is reusing the RX pin)
-	P1SEL &= ~(1 << 5);
-	P1DIR &= ~(1 << 5);
-	P1REN |=  (1 << 5);
-	P1OUT |=  (1 << 5);
+
+	button_init();
 
 	// turn off all the LEDs to reduce power
 	led_off();
@@ -81,13 +78,29 @@ int main(void)
 }
 
 
+static void (*const modes[])(void) = {
+	animation_draw,
+	stopwatch_draw,
+};
+
+static const unsigned mode_count = sizeof(modes) / sizeof(*modes);
+unsigned mode = 0;
+
+
 //! Watchdog Timer interrupt service routine, calls back to handler functions.
 void __attribute__ ((interrupt(WDT_VECTOR)))
 watchdog_timer(void)
 {
 	ucs_fast();
-	//animation_draw();
-	stopwatch_draw();
+
+	button_update();
+
+	// long hold advances mode
+	if (button_long)
+		mode = (mode + 1) % mode_count;
+
+	modes[mode]();
+
 	led_off();
 	ucs_slow();
 }

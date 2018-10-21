@@ -9,54 +9,38 @@
 #include <stdlib.h>
 
 #include "led.h"
+#include "button.h"
 
 static unsigned running = 1;
 static uint32_t counter; // in ms
 
 
-static void button_update(void)
-{
-	// check the button status
-	static unsigned button;
-
-	// if button is pressed, increment hold counter
-	if ((P1IN & (1 << 5)) == 0)
-	{
-		button++;
-
-		// check for long hold
-		return;
-	}
-
-	// button has been released; ignore if too short
-	if (button < 5)
-	{
-		button = 0;
-		return;
-	}
-
-	// held and released for the right amount of time
-	button = 0;
-
-	// if we are running, stop running
-	// otherwise reset the counter
-	if (running)
-	{
-		running = 0;
-	} else {
-		counter = 0;
-		running = 1;
-	}
-}
-
-
 // called every 16ms by the RTC interrupt
 void stopwatch_draw()
 {
+	if (button_short)
+	{
+		if (running)
+		{
+			// stop the counter
+			running = 0;
+		} else {
+			// reset the counter, restart it
+			counter = 0;
+			running = 1;
+		}
+	}
+
+	if (button_long)
+	{
+		// we have just entered this mode
+		running = 0;
+		counter = 0;
+	}
+
 	if (running)
 		counter += 16;
 
-	button_update();
 	uint32_t c = counter;
 	const unsigned ms = c % 1000;
 	c /= 1000;

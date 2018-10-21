@@ -28,6 +28,7 @@ LDFLAGS += -mmcu=$(MCU)
 
 OBJS += main.o
 OBJS += led.o
+OBJS += button.o
 OBJS += animation.o
 OBJS += stopwatch.o
 OBJS += ucs.o
