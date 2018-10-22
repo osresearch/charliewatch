@@ -149,7 +149,7 @@ static void opposite_animation(unsigned count)
 	{
 		// retract the bargraph between the two
 		count /= 2;
-		for(i = 0 ; i < count ; i++)
+		for(i = 0 ; i <= count ; i++)
 		{
 			led_on((RTCSEC - i + 60) % 60);
 			led_on((RTCMIN - i + 60) % 60);
@@ -188,7 +188,7 @@ static void triangle_animation(unsigned count)
 	{
 		// retract the bargraph to the three
 		count /= 3;
-		for(i = 0 ; i < count ; i++)
+		for(i = 0 ; i <= count ; i++)
 		{
 			led_on((RTCSEC - i + 60) % 60);
 			led_on((RTCMIN - i + 60) % 60);
