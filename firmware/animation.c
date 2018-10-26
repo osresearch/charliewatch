@@ -202,11 +202,12 @@ static void triangle_animation(unsigned count)
 
 static void hour_animation(unsigned count)
 {
-	led_display[2] = RTCSEC;
-
 	// run the hour forward
 	if (0 == (count % 5))
 		led_display[1] = 60 + (led_display[1] - 60 + 1 + 12) % 12;
+
+	// and the second hand should match it
+	led_display[2] = (led_display[2] + 1) % 60;
 
 	led_draw();
 }
