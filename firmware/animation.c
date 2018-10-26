@@ -107,25 +107,43 @@ static void align_animation(unsigned count)
 {
 	unsigned i;
 
-	led_on(RTCSEC);
+	if (count > 180)
+	{
+		// draw out from the minute up to the count
+		for(i=0 ; i < 240 - count ; i++)
+			led_on((RTCMIN + i + 60) % 60);
 
+		// draw out from the hour hand in reverse
+		for(i=0 ; i < (240 - count)/5 ; i ++)
+			led_on(60 + (RTCHOUR + i + 12) % 12);
+	} else
+	if (count > 120)
+	{
+		// start collapsing back to the minute
+		for(i= 0 ; i < count - 120 ; i++)
+			led_on((RTCMIN - i + 60) % 60);
+
+		// collapse back to the hour hand
+		for(i=0 ; i <= (count - 120)/5 ; i ++)
+			led_on(60 + (RTCHOUR - i + 12) % 12);
+	} else
 	if (count > 60)
 	{
 		// draw out from the minute up to the count
 		for(i=0 ; i < 120 - count ; i++)
-			led_on((RTCMIN + i) % 60);
+			led_on((RTCMIN - i + 60) % 60);
 
 		// draw out from the hour hand in reverse
-		for(i=0 ; i < (120 - count)/5 ; i ++)
-			led_on(60 + (RTCHOUR + 12 - i) % 12);
+		for(i=0 ; i <= (120 - count)/5 ; i ++)
+			led_on(60 + (RTCHOUR + i + 12) % 12);
 	} else {
 		// start collapsing back to the minute
 		for(i= 0 ; i < count ; i++)
-			led_on((RTCMIN - i + 60) % 60);
+			led_on((RTCMIN + i + 60) % 60);
 
 		// collapse back to the hour hand
-		for(i=0 ; i < count/5 ; i ++)
-			led_on(60 + (RTCHOUR + i) % 12);
+		for(i=0 ; i <= count/5 ; i ++)
+			led_on(60 + (RTCHOUR - i + 12) % 12);
 	}
 }
 
@@ -305,7 +323,7 @@ void animation_draw()
 		if (RTCMIN == RTCSEC && RTCMIN == hour_five)
 		{
 			// when the hour, minute and second hands line up
-			animation_counter = 120;
+			animation_counter = 240;
 			animation = align_animation;
 		} else
 		if (RTCSEC == RTCMIN && (RTCMIN % 5) == 0)
