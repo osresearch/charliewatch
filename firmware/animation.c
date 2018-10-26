@@ -102,7 +102,7 @@ static void sparkle_animation(unsigned count)
 #endif
 }
 
-// animation for when all the hands align
+// animation 1 for when all the hands align
 static void align_animation(unsigned count)
 {
 	unsigned i;
@@ -145,6 +145,21 @@ static void align_animation(unsigned count)
 		for(i=0 ; i <= count/5 ; i ++)
 			led_on(60 + (RTCHOUR - i + 12) % 12);
 	}
+}
+
+// animation 2 for when all the hands align
+static void race_animation(unsigned count)
+{
+	// second hand races at full speed
+	led_display[2] = (RTCMIN + 360 - count) % 60;
+
+	// minute hand at half speed
+	led_display[0] = (RTCMIN + 360 - count/2) % 60;
+
+	// hour hand at 1/3 speed
+	led_display[1] = (RTCMIN + 360 - count/3) % 60;
+
+	led_draw();
 }
 
 
@@ -333,8 +348,15 @@ void animation_draw()
 		if (RTCMIN == RTCSEC && RTCMIN == hour_five)
 		{
 			// when the hour, minute and second hands line up
-			animation_counter = 240;
-			animation = align_animation;
+			if (RTCMIN != 30)
+			{
+				animation_counter = 240;
+				animation = align_animation;
+			} else {
+				// special six o'clock animation
+				animation_counter = 360;
+				animation = race_animation;
+			}
 		} else
 		if (RTCSEC == RTCMIN && (RTCMIN % 5) == 0)
 		{
