@@ -248,6 +248,16 @@ static void minute_animation(unsigned count)
 	led_draw();
 }
 
+static void new_minute_animation(unsigned count)
+{
+	// run the minute hand forwards at full speed
+	led_display[0] = (led_display[0] + 60 - 1) % 60;
+
+	// leave the second hand where it is
+	led_display[2] = RTCSEC;
+
+	led_draw();
+}
 
 static void second_animation(unsigned count)
 {
@@ -357,6 +367,12 @@ void animation_draw()
 			// second hand aligns with the hour hand
 			animation_counter = 60;
 			animation = hour_animation;
+		} else
+		if (RTCSEC == 0)
+		{
+			// new minute
+			animation_counter = 60;
+			animation = new_minute_animation;
 		}
 	}
 
