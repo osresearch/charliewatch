@@ -263,12 +263,14 @@ static void minute_animation(unsigned count)
 	led_draw();
 }
 
+// count will be set to RTMIN
 static void new_minute_animation(unsigned count)
 {
-	// run the minute hand forwards at full speed
-	led_display[0] = (led_display[0] + 60 - 1) % 60;
+	// run a ghost minute hand backwards to 0 at full speed
+	led_on(count % 60);
+	led_off();
 
-	// leave the second hand where it is
+	// ensure that the second hand advances
 	led_display[2] = RTCSEC;
 
 	led_draw();
@@ -392,8 +394,8 @@ void animation_draw()
 		} else
 		if (RTCSEC == 0)
 		{
-			// new minute
-			animation_counter = 60;
+			// new minute, re-wind the minute hand
+			animation_counter = RTCMIN;
 			animation = new_minute_animation;
 		}
 	}
