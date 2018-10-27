@@ -73,6 +73,9 @@ void led_draw(void)
 }
 
 
+static unsigned animation_counter = 0;
+static void (*animation)(unsigned counter) = NULL;
+
 static void sparkle_animation(unsigned count)
 {
 #if 0
@@ -263,11 +266,24 @@ static void minute_animation(unsigned count)
 	led_draw();
 }
 
-// count will be set to RTMIN
+// count will be start at 60
 static void new_minute_animation(unsigned count)
 {
-	// run a ghost minute hand backwards to 0 at full speed
-	led_on(count % 60);
+	// if earlier than 30 minute past the hour,
+	//	run the hand forwards to 59
+	// otherwise
+	//	run the hard backwards to 1
+	// reset animation counter when we hit either condition
+
+	if (RTCMIN > 30)
+		count = RTCMIN + count - 60;
+	else
+		count = RTCMIN - count + 60;
+
+	if (count == 0 || count == 59)
+		animation_counter = 0;
+
+	led_on(count);
 	led_off();
 
 	// ensure that the second hand advances
@@ -321,8 +337,6 @@ void animation_draw()
 	static int hour_dir;
 	static unsigned hour_bright = 0;
 
-	static unsigned animation_counter = 0;
-	static void (*animation)(unsigned counter) = NULL;
 
 	if (animation_counter)
 	{
@@ -395,7 +409,7 @@ void animation_draw()
 		if (RTCSEC == 0)
 		{
 			// new minute, re-wind the minute hand
-			animation_counter = RTCMIN;
+			animation_counter = 60;
 			animation = new_minute_animation;
 		}
 	}
