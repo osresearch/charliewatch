@@ -1,8 +1,8 @@
-// board is 0.622" diameter
+// v0.1 board is 0.622" radius
+// v0.2 board is 0.5642" radius (1 square inch)
 
-dial = 0.622 * 25.4;
-height = 8;
-
+module case(dial,lug_offset,height)
+{
 render() difference()
 {
 	union() {
@@ -10,12 +10,19 @@ render() difference()
 		rotate([0,0,360/12/2]) cylinder(r=dial+3, h=height, $fn=12);
 
 		// lug
-		translate([16,0,2]) cube([8,25,4], center=true);
-		translate([-16,0,2]) cube([8,25,4], center=true);
+		translate([+lug_offset,0,2]) cube([8,25,4], center=true);
+		translate([-lug_offset,0,2]) cube([8,25,4], center=true);
+
+		// bump for button
+		translate([0,dial,height/4]) cylinder(r=3, h=height/2, $fn=30);
 	}
+
 
 	// tapered cylinder inside
 	translate([0,0,height-1.5]) cylinder(r1=dial+0.8, r2=dial, h=1.6, $fn=60);
+
+	// cutout for button
+	translate([0,dial,height/4]) cylinder(r=3-0.1, h=height/2, $fn=30);
 
 	// larger inside cylinder
 	cylinder(r=dial+0.8, h=height-1.5, $fn=60);
@@ -24,3 +31,12 @@ render() difference()
 	translate([-14,0,0]) rotate([0,30,0]) cube([20,22.2,2], center=true);
 	translate([+14,0,0]) rotate([0,-30,0]) cube([20,22.2,2], center=true);
 }
+}
+
+
+// v0.1 case
+%translate([0,25,0]) case(dial=0.622 * 25.4, lug_offset = 16, height=8);
+
+// v0.2 case
+case(dial= 0.5642 * 25.4, lug_offset = 14, height=6);
+
