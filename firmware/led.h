@@ -13,6 +13,7 @@ void animation_draw(void);
 
 // Raw method to turn on an LED
 void led_on(uint8_t i);
+void led_dither(uint8_t i, uint8_t bright);
 
 // Turn off all LEDs
 void led_off(void);

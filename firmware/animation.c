@@ -53,6 +53,7 @@ void delay(unsigned len)
 uint8_t led_display[] = {};
 uint8_t led_bright[] = {};
 
+
 void led_draw(void)
 {
 	int i;
@@ -62,6 +63,7 @@ void led_draw(void)
 		const unsigned led = led_display[i];
 		const unsigned bright = led_bright[i];
 
+#if 0
 		if (bright > 0)
 			led_on(led);
 
@@ -69,6 +71,9 @@ void led_draw(void)
 			delay(bright);
 		else
 			led_off();
+#else
+		led_dither(led, bright);
+#endif
 	}
 
 	led_off();

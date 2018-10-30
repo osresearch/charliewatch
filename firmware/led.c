@@ -102,10 +102,10 @@ static const uint8_t leds[] =
 
 void led_on(uint8_t i)
 {
-	// tri-state all LED lines
-	P3DIR = 0;
+	// tri-state all LED lines, leaving the others driven
+	P3DIR = ~0x1F;
 	P3OUT = 0;
-	P2DIR = 0;
+	P2DIR = ~0x0F;
 	P2OUT = 0;
 
 	const uint8_t x = (leds[i] >> 4) & 0xF;
@@ -136,6 +136,44 @@ void led_off(void)
 	P2DIR = 0xFF;
 }
 
+
+void led_dither(uint8_t i, uint8_t bright)
+{
+	const uint8_t x = (leds[i] >> 4) & 0xF;
+	const uint8_t y = (leds[i] >> 0) & 0xF;
+
+	// tri-state all LED lines, leaving the others driven
+	P3DIR = ~0x1F;
+	P2DIR = ~0x0F;
+
+	// 0-4 are on P3.0 - P3.4
+	// 5-8 are on P2.0 - P2.3
+	if (x < 5)
+		P3DIR |= 1 << (x - 0);
+	else
+		P2DIR |= 1 << (x - 5);
+
+	if (y < 5) {
+		const uint8_t mask = 1 << (y - 0);
+		P3DIR |= mask;
+
+		do {
+			P3OUT = mask;
+			P3OUT = 0;
+		} while(bright--);
+	} else {
+		const uint8_t mask = 1 << (y - 5);
+		P2DIR |= mask;
+
+		do {
+			P2OUT = mask;
+			P2OUT = 0;
+		} while(bright--);
+	}
+
+	led_off();
+}
+
 void led_test(void)
 {
 	int i, j;
@@ -143,11 +181,11 @@ void led_test(void)
 	{
 		for(j = 0 ; j < 20 ; j++)
 		{
-			led_on(i); delay(4);
-			led_off(); delay(500);
+			led_on(i); // delay(4);
+			led_off();
+			delay(200);
 		}
 	}
 
-	delay(2000);
+	delay(200);
 }
-
