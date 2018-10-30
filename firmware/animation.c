@@ -59,9 +59,11 @@ void led_draw(void)
 
 	for(i=0 ; i < NUM_DISPLAY ; i++)
 	{
+		const unsigned led = led_display[i];
 		const unsigned bright = led_bright[i];
+
 		if (bright > 0)
-			led_on(led_display[i]);
+			led_on(led);
 
 		if (bright > 1)
 			delay(bright);
