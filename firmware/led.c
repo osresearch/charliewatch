@@ -127,7 +127,7 @@ void led_on(uint8_t i)
 	}
 }
 
-void led_off()
+void led_off(void)
 {
 	// set all the LED lines to output, drive to ground
 	P2OUT = 0;
@@ -135,3 +135,19 @@ void led_off()
 	P3DIR = 0xFF;
 	P2DIR = 0xFF;
 }
+
+void led_test(void)
+{
+	int i, j;
+	for(i = 0 ; i < 72 ; i++)
+	{
+		for(j = 0 ; j < 20 ; j++)
+		{
+			led_on(i); delay(4);
+			led_off(); delay(500);
+		}
+	}
+
+	delay(2000);
+}
+

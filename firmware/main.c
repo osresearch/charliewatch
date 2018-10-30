@@ -35,7 +35,13 @@ int main(void)
 	// turn off all the LEDs to reduce power
 	led_off();
 
+
 #if 1
+	led_test();
+#else
+	while(1) led_test();
+#endif
+
 	rtc_init();
 	ucs_init(); // doesn't work if crystal isn't there?
 
@@ -57,23 +63,6 @@ int main(void)
 		led_on(60); delay(30000);
 		led_off(); delay(60000);
 	}
-#else
-	// test pattern for all LEDs
-	while(1)
-	{
-		int i, j;
-		for(i = 0 ; i < 72 ; i++)
-		{
-			for(j = 0 ; j < 20 ; j++)
-			{
-				led_on(i); delay(10);
-				led_off(); delay(1000);
-			}
-		}
-
-		delay(10000);
-	}
-#endif
 }
 
 
