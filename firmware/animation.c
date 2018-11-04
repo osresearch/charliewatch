@@ -431,9 +431,18 @@ void animation_draw()
 		hour_dir = +1;
 
 	// set the default brightnesses for minute and second
-	led_bright[0] = 16;
-	led_bright[1] = (hour_bright / 8) + 1;
+#define CONFIG_ORANGE
+
+#ifdef CONFIG_ORANGE
+	led_bright[0] = 32;
+	led_bright[1] = (hour_bright / 4) + 1;
 	led_bright[2] = 1;
+#endif
+#ifdef CONFIG_RED
+	led_bright[0] = 16;
+	led_bright[1] = (hour_bright / 4) + 1;
+	led_bright[2] = 1;
+#endif
 
 	led_draw();
 }
