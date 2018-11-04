@@ -39,7 +39,10 @@ int main(void)
 #if 1
 	led_test();
 #else
-	while(1) led_test();
+	while(1) {
+		led_test();
+		delay(1000);
+	}
 #endif
 
 	rtc_init();
@@ -58,10 +61,10 @@ int main(void)
 	// flash the 0 hour so that we know something is wrong
 	while(1)
 	{
-		led_on(60); delay(30000);
-		led_off(); delay(30000);
-		led_on(60); delay(30000);
-		led_off(); delay(60000);
+		led_on(60); delay(1);
+		led_off(); delay(3);
+		led_on(60); delay(1);
+		led_off(); delay(6);
 	}
 }
 

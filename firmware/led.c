@@ -186,6 +186,4 @@ void led_test(void)
 			delay(200);
 		}
 	}
-
-	delay(200);
 }
