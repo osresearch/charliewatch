@@ -5,11 +5,12 @@ PORT ?= /dev/ttyACM0
 MCU ?= cc430f5137
 
 # Currently we're flashing with a launchpad board
-PROGRAMMER ?= rf2500
+PROGRAMMER ?= tilib
 
 # Create an array of the current y/m/d h:m:s
 # The -100 is to avoid octal constant issues with leading zeros
 BUILDTIME := $(shell date "+%y,%m,%d,1%H-100,1%M-100,1%S-100")
+BUILDSEC := $(shell date "+%s")
 
 #Standard Debian gcc-msp430 and msp430mcu packages.
 CC = msp430-gcc
@@ -22,6 +23,7 @@ CFLAGS += \
 	-MMD \
 	-MF .$(notdir $@).d \
 	-DBUILDTIME=$(BUILDTIME) \
+	-DBUILDSEC=$(BUILDSEC) \
 
 ASFLAGS += -mmcu=$(MCU)
 LDFLAGS += -mmcu=$(MCU)

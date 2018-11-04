@@ -16,7 +16,8 @@
 //#include "buildtime.h"
 
 //! ROM copy of the manufacturing time is generated at build time
-extern const unsigned char romsavetime[];
+extern const uint8_t romsavetime[];
+extern const uint32_t buildtime;
 
 //! If this is 0xdeadbeef, the ram time is good.
 static unsigned long magicword __attribute__ ((section (".noinit")));
@@ -38,16 +39,15 @@ static void rtc_savetime(){
   ramsavetime[5]=RTCSEC;
   
   //Set the magic word, so we'll know the time is good.
-  magicword=0xdeadbeef;
+  magicword=buildtime;
 }
 
 //! Load the time from RAM or ROM
 static void rtc_loadtime(){
   //Use the RAM copy if it is reasonable.
- //it is never reasonable
-  //if(magicword!=0xdeadbeef){
+  if(magicword!=buildtime){
     memcpy(ramsavetime,romsavetime,sizeof(ramsavetime));
-  //}
+  }
   
   /* We need to call these functions for safety, as there are some
      awful RTC errata to work around. */
@@ -60,6 +60,18 @@ static void rtc_loadtime(){
   SetRTCDAY(ramsavetime[2]);
   //printf("Setting RTCDAY to %d yielded %d.\n",
   //ramsavetime[7], RTCDAY);
+
+  // opposite time
+  //SetRTCHOUR(13);
+  //SetRTCMIN(34);
+  //SetRTCSEC(58);
+
+  // align test
+  if(0) {
+    SetRTCHOUR(17);
+    SetRTCMIN(25);
+    SetRTCSEC(5);
+  }
 
   //SetRTCHOUR(5);
   //SetRTCMIN(59);
