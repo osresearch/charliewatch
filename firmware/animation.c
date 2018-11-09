@@ -246,7 +246,7 @@ static void triangle_animation(unsigned count)
 static void hour_animation(unsigned count)
 {
 	// run the hour forward
-	if (0 == (count % 5))
+	if (3 == (count % 5))
 		led_display[1] = 60 + (led_display[1] - 60 + 1 + 12) % 12;
 
 	// and the second hand should match it
@@ -307,35 +307,109 @@ static void second_animation(unsigned count)
 	led_draw();
 }
 
-
-// Determine if all three hands are 120 degrees apart
-static int triangle_time(int a, int b, int c)
+static void diamond1_animation(unsigned count)
 {
-	if (a % 5 != 0 || b % 5 != 0)
-		return 0;
-	// 0, 20, 40 => 20, 40
-	// 0, 40, 20 => 40, 20
-	// 20, 0, 40 => -20, 20
-	// 40, 0, 20 => -40, -20
-	// 40, 20, 0 => -20, -40,
-	// 20, 40, 0 => 20, -20
+	// draw two pulses from the hour and minute hand to the second hand
+	// count goes from 50 to 0
+	// minute goes from 25-0, hour goes from 35-60
+	count = (50 - count) % 25;
+	led_on((RTCMIN    - count + 60) % 60); led_off();
+	led_on((RTCHOUR*5 + count + 60) % 60); led_off();
 
-	int d1 = b - a;
-	int d2 = c - a;
-	if (d1 == 20 && d2 == 40)
-		return 1;
-	if (d1 == 40 && d2 == 20)
-		return 1;
-	if (d1 == -20 && d2 == -40)
-		return 1;
-	if (d1 == -40 && d2 == -20)
-		return 1;
-	if (d1 == -20 && d2 == 20)
-		return 1;
-	if (d1 == 20 && d2 == -20)
-		return 1;
+	led_draw();
+}
 
-	return 0;
+static void diamond2_animation(unsigned count)
+{
+	// draw two pulses from the hour and minute hand to the second hand
+	// count goes from 50 to 0
+	// minute goes from 25-0, hour goes from 35-60
+	count = (50 - count) % 25;
+	led_on((RTCMIN    + count + 60) % 60); led_off();
+	led_on((RTCHOUR*5 - count + 60) % 60); led_off();
+
+	led_draw();
+}
+
+
+static void
+check_animation(void)
+{
+	// normalize so that hour and minute are relative to seconds
+	const unsigned s =  RTCSEC;
+	const unsigned m = (RTCMIN    - s + 60) % 60;
+	const unsigned h = (RTCHOUR*5 - s + 60) % 60;
+
+	if (s == 0 && h == 0 && m == 0)
+	{
+		// midnight or noon, draw the sparkles
+		animation_counter = 240;
+		animation = sparkle_animation;
+	} else
+	if (m == 0 && h == 0)
+	{
+		// when the hour, minute and second hands line up
+		if (s == 30)
+		{
+			// special six o'clock animation
+			animation_counter = 360;
+			animation = race_animation;
+		} else {
+			// normal hour animation
+			animation_counter = 240;
+			animation = align_animation;
+		}
+	} else
+	if (m == 0 && (s % 5) == 0)
+	{
+		// when the minute and second line up
+		// every five minutes
+		// wrap the second hand twice
+		// and the minute hand at half speed.
+		animation_counter = 120;
+		animation = minute_animation;
+	} else
+	if (m == 0)
+	{
+		// when the second hand hits the minute hand,
+		// run the second hand forwards
+		animation_counter = 60;
+		animation = second_animation;
+	} else
+	if (m == 30 && h == 0)
+	{
+		// second and hour align, hour 180 degrees opposite
+		animation_counter = 120;
+		animation = opposite_animation;
+	} else
+	if (h == 0)
+	{
+		// second hand aligns with the hour hand
+		animation_counter = 60;
+		animation = hour_animation;
+	} else
+	if ((m == 20 && h == 40) || (m == 40 && h == 20))
+	{
+		// all hands are 120 degrees out of phase
+		animation_counter = 120;
+		animation = triangle_animation;
+	} else
+	if (m == 25 && h == 35)
+	{
+		animation_counter = 50;
+		animation = diamond1_animation;
+	} else
+	if (m == 35 && h == 25)
+	{
+		animation_counter = 50;
+		animation = diamond2_animation;
+	} else
+	if (s == 0)
+	{
+		// new minute, re-wind the minute hand
+		animation_counter = 60;
+		animation = new_minute_animation;
+	}
 }
 
 void animation_draw()
@@ -360,67 +434,8 @@ void animation_draw()
 		led_display[1] = 60 + (RTCHOUR % 12);
 		led_display[2] = RTCSEC;
 
-		const unsigned hour_five = 5 * (RTCHOUR % 12);
-
-		if (RTCMIN == 0 && RTCSEC == 0 && hour_five == 0)
-		{
-			// midnight or noon, draw the sparkles
-			animation_counter = 240;
-			animation = sparkle_animation;
-		} else
-		if (RTCMIN == RTCSEC && RTCMIN == hour_five)
-		{
-			// when the hour, minute and second hands line up
-			if (RTCMIN != 30)
-			{
-				animation_counter = 240;
-				animation = align_animation;
-			} else {
-				// special six o'clock animation
-				animation_counter = 360;
-				animation = race_animation;
-			}
-		} else
-		if (RTCSEC == RTCMIN && (RTCMIN % 5) == 0)
-		{
-			// when the minute and second line up
-			// every five minutes
-			// wrap the second hand twice
-			// and the minute hand at half speed.
-			animation_counter = 120;
-			animation = minute_animation;
-		} else
-		if (RTCMIN == RTCSEC)
-		{
-			// when the second hand hits the minute hand,
-			// run the second hand forwards
-			animation_counter = 60;
-			animation = second_animation;
-		} else
-		if (RTCMIN == (RTCSEC + 30) % 60 && RTCSEC == hour_five)
-		{
-			animation_counter = 120;
-			animation = opposite_animation;
-		} else
-		if (triangle_time(RTCMIN, RTCSEC, hour_five))
-		{
-			animation_counter = 120;
-			animation = triangle_animation;
-		} else
-		if (RTCSEC == hour_five)
-		{
-			// second hand aligns with the hour hand
-			animation_counter = 60;
-			animation = hour_animation;
-		} else
-		if (RTCSEC == 0)
-		{
-			// new minute, re-wind the minute hand
-			animation_counter = 60;
-			animation = new_minute_animation;
-		}
+		check_animation();
 	}
-
 
 	// make the hour "breath"
 	hour_bright += hour_dir;
@@ -431,7 +446,7 @@ void animation_draw()
 		hour_dir = +1;
 
 	// set the default brightnesses for minute and second
-#define CONFIG_ORANGE
+#define CONFIG_RED
 
 #ifdef CONFIG_ORANGE
 	led_bright[0] = 32;
