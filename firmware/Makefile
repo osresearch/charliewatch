@@ -9,7 +9,7 @@ PROGRAMMER ?= tilib
 
 # Create an array of the current y/m/d h:m:s
 # The -100 is to avoid octal constant issues with leading zeros
-BUILDTIME := $(shell date "+%y,%m,%d,1%H-100,1%M-100,1%S-100")
+BUILDTIME := $(shell date "+%y,%m,1%d-100,1%H-100,1%M-100,1%S-100")
 BUILDSEC := $(shell date "+%s")
 
 #Standard Debian gcc-msp430 and msp430mcu packages.
@@ -57,7 +57,7 @@ erase:
 	$(BSL) -e
 
 flash: charliewatch.elf
-	mspdebug \
+	../mspdebug/mspdebug \
 		$(PROGRAMMER) \
 		"prog $<" \
 
