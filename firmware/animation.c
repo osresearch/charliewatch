@@ -307,26 +307,15 @@ static void second_animation(unsigned count)
 	led_draw();
 }
 
-static void diamond1_animation(unsigned count)
+static void diamond_animation(unsigned count)
 {
 	// draw two pulses from the hour and minute hand to the second hand
 	// count goes from 50 to 0
-	// minute goes from 25-0, hour goes from 35-60
-	count = (50 - count) % 25;
-	led_on((RTCMIN    - count + 60) % 60); led_off();
-	led_on((RTCHOUR*5 + count + 60) % 60); led_off();
+	if (count > 25)
+		count = 50 - count;
 
-	led_draw();
-}
-
-static void diamond2_animation(unsigned count)
-{
-	// draw two pulses from the hour and minute hand to the second hand
-	// count goes from 50 to 0
-	// minute goes from 25-0, hour goes from 35-60
-	count = (50 - count) % 25;
-	led_on((RTCMIN    + count + 60) % 60); led_off();
-	led_on((RTCHOUR*5 - count + 60) % 60); led_off();
+	led_on((RTCSEC - count + 60) % 60); led_off();
+	led_on((RTCSEC + count + 60) % 60); led_off();
 
 	led_draw();
 }
@@ -394,15 +383,10 @@ check_animation(void)
 		animation_counter = 120;
 		animation = triangle_animation;
 	} else
-	if (m == 25 && h == 35)
+	if ((m == 25 && h == 35) || (m == 35 && h == 25))
 	{
 		animation_counter = 50;
-		animation = diamond1_animation;
-	} else
-	if (m == 35 && h == 25)
-	{
-		animation_counter = 50;
-		animation = diamond2_animation;
+		animation = diamond_animation;
 	} else
 	if (s == 0)
 	{
