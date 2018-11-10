@@ -172,6 +172,33 @@ static void race_animation(unsigned count)
 	led_draw();
 }
 
+// animation for when the hands align at 3 and 9
+// rotate start at max speed, rotate stop at half speed,
+// makes four revolutions
+// count goes from 240 to 0
+static void chase_animation(unsigned count)
+{
+	unsigned i;
+
+	// change the sense of the count
+	count = 240 - count;
+
+	if (count < 120)
+	{
+		// first two laps (0-59), go from slow to fast
+		// at the end the entire watch is illuminated
+		for(i = count/2 ; i < count ; i++)
+			led_on((i + RTCSEC) % 60);
+	} else {
+		// second two laps, go from fast to slow, undrawing
+		// at the end nothing is illuminated
+		count -= 120;
+		for(i = count ; i < count/2 + 60 ; i++)
+			led_on((i + RTCSEC) % 60);
+	}
+
+	led_off();
+}
 
 // when the second hand lines up with the hour and the minute
 // is 180 degrees away
@@ -343,6 +370,12 @@ check_animation(void)
 			// special six o'clock animation
 			animation_counter = 360;
 			animation = race_animation;
+		} else
+		if (s == 15 || s == 45)
+		{
+			// special 3 and 9 animation
+			animation_counter = 240;
+			animation = chase_animation;
 		} else {
 			// normal hour animation
 			animation_counter = 240;
