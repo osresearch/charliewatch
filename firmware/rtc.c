@@ -82,9 +82,9 @@ static void rtc_loadtime(){
 
   // diamond test
   if(0) {
-    SetRTCHOUR(8);
-    SetRTCMIN(29);
-    SetRTCSEC(55);
+    SetRTCHOUR(13);
+    SetRTCMIN(40);
+    SetRTCSEC(25);
   }
 
   //SetRTCHOUR(5);

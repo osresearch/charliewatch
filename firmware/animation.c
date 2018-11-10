@@ -341,8 +341,8 @@ static void diamond_animation(unsigned count)
 	if (count > 25)
 		count = 50 - count;
 
-	led_on((RTCSEC - count + 60) % 60); led_off();
-	led_on((RTCSEC + count + 60) % 60); led_off();
+	led_on((RTCHOUR*5 - count + 60) % 60); led_off();
+	led_on((RTCHOUR*5 + count + 60) % 60); led_off();
 
 	led_draw();
 }
@@ -416,7 +416,7 @@ check_animation(void)
 		animation_counter = 120;
 		animation = triangle_animation;
 	} else
-	if ((m == 25 && h == 35) || (m == 35 && h == 25))
+	if ((h == 25 && m == 50) || (h == 35 && m == 10))
 	{
 		animation_counter = 50;
 		animation = diamond_animation;
