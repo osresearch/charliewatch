@@ -70,8 +70,15 @@ module case(dial,lug_offset,band_width,height)
 render() difference()
 {
 	union() {
+		intersection() {
 		// 12-sided outside
 		rotate([0,0,360/12/2]) cylinder(r=dial+3, h=height, $fn=12);
+		// round off the corners slightly
+		translate([0,0,-1]) cylinder(r=dial+3-0.1, h=height+2, $fn=180);
+		// and round off the top slightly
+		sphere(r=dial+3+0.7, $fn=60);
+		}
+
 
 		// lug
 		translate([+lug_offset+5,-band_width/2,0])
