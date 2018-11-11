@@ -43,10 +43,64 @@ render() difference()
 );
 
 // v0.2 case
-case(
+%case(
 	dial= 0.5642 * 25.4,
 	lug_offset = 14,
 	band_width = 18,
 	height=6.5
 );
 
+module link(w,d,h)
+{
+	render() difference() {
+		union() {
+			cube([w,d,h]);
+
+			// positive rounded edge A1
+			translate([0,d,h/2])
+			rotate([0,90,0]) 
+			cylinder(d=h, h=w, $fn=16);
+
+			// positive rounded edge B2
+			translate([0,0,h/2])
+			rotate([0,90,0]) 
+			cylinder(d=h, h=w, $fn=16);
+		}
+
+		// negative large rounded edge B1
+		translate([-1,0,h/2])
+		rotate([0,90,0]) 
+		cylinder(d=h+0.3, h=w/3+1+0.1, $fn=16);
+
+		// negative large rounded edge B3
+		translate([w*2/3-0.1,0,h/2])
+		rotate([0,90,0]) 
+		cylinder(d=h+0.3, h=w/3+1+0.1, $fn=16);
+
+		// negative large rounded edge A2
+		translate([w*1/3-0.1,d,h/2])
+		rotate([0,90,0]) 
+		cylinder(d=h+0.3, h=w/3+0.2, $fn=16);
+
+		// pin hole
+		translate([-1,0,h/2])
+		rotate([0,90,0]) 
+		cylinder(d=h/2, h=w+2, $fn=16);
+	}
+
+	// pin
+	translate([1,d,h/2])
+	rotate([0,90,0])
+	cylinder(d=h/2-0.2, h=w-2, $fn=16);
+}
+
+for(i=[0:5])
+{
+	translate([-i*8,-15/2,0])
+	rotate([0,0,90])
+	link(15,8,2);
+}
+
+%translate([-28,20,0])
+rotate([0,0,90])
+link(15,8,2);
