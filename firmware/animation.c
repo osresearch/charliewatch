@@ -247,22 +247,24 @@ static void triangle_animation(unsigned count)
 	if (count >= 60)
 	{
 		// grow the bargraph between the three points
+		// count goes from 0 - 20
 		count = (120 - count) / 3;
 		for(i = 0 ; i < count ; i++)
 		{
-			led_on((RTCSEC + i) % 60);
-			led_on((RTCMIN + i) % 60);
-			led_on((hour + i) % 60);
+			led_dither((RTCSEC + i) % 60, (20 - count + i)/8);
+			led_dither((RTCMIN + i) % 60, (20 - count + i)/8);
+			led_dither((hour + i) % 60, (20 - count + i)/8);
 		}
 	} else
 	{
 		// retract the bargraph to the three
+		// count goes from 20 to 0
 		count /= 3;
 		for(i = 0 ; i <= count ; i++)
 		{
-			led_on((RTCSEC - i + 60) % 60);
-			led_on((RTCMIN - i + 60) % 60);
-			led_on((hour - i + 60) % 60);
+			led_dither((RTCSEC - i + 60) % 60, (count - i)/8);
+			led_dither((RTCMIN - i + 60) % 60, (count - i)/8);
+			led_dither((hour - i + 60) % 60, (count - i)/8);
 		}
 	}
 
