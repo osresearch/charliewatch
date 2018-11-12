@@ -14,8 +14,22 @@
 #include "rtc.h"
 #include "ucs.h"
 #include "led.h"
+#include "adc.h"
 #include "power.h"
 #include "button.h"
+
+//! Activates and configures the module, but does not turn on reference.
+void ref_init(){
+  //Setting the master bit disables legacy mode.
+  REFCTL0|=REFMSTR;
+
+  //Wait for register to not be busy before modifying voltage.
+  while(REFCTL0 & REFGENBUSY);
+  
+  //2.5V reference.
+  REFCTL0 &= ~BGMODE;
+  REFCTL0|=REFVSEL_2;
+}
 
 
 //! Main method.
@@ -23,18 +37,19 @@ int main(void)
 {
 	WDTCTL = WDTPW + WDTHOLD; // Stop WDT
 
-	// drive port J and 1 to ground to avoid CMOS power drain
-	PJDIR |=  0xF;
-	PJOUT &= ~0xF;
-	P1DIR |=  0xF;
-	P1OUT &= ~0xF;
+	ref_init();
+	//uart_init();
 
+	// drive port J and 1 to ground to avoid CMOS power drain
+	PJDIR |=  0xFF;
+	PJOUT &= ~0xFF;
+	P1DIR |=  0xFF;
+	P1OUT &= ~0xFF;
 
 	button_init();
 
 	// turn off all the LEDs to reduce power
 	led_off();
-
 
 #if 1
 	led_test();
@@ -73,11 +88,50 @@ extern void stopwatch_draw(void);
 extern void clockset_draw(void);
 extern void animation_draw(void);
 
+static void voltage_draw(void)
+{
+	unsigned i;
+	unsigned raw_volts = adc12_single_conversion(
+		REFVSEL_1, ADC12SHT0_10, ADC12INCH_11);
+
+
+#if 0
+	static unsigned bright = 0;
+	bright = (bright + 1) % 128;
+
+	for(i = 0 ; i < 12 ; i++)
+	{
+		if (0 == (raw_volts & (1<<i)))
+			continue;
+		led_dither(60+i, bright > 64 ? 128 - bright : bright);
+	}
+
+	unsigned scaled = raw_volts / 68;
+	for(i = 0 ; i < scaled ; i++)
+	{
+		led_on(i);
+	}
+#else
+	unsigned millivolts = (1250 * (uint32_t) raw_volts) / 1024;
+	led_on(60 + (millivolts / 1000));
+
+	unsigned mv = ((millivolts % 1000) * 60) / 1000;
+	for(i = 0 ; i < mv ; i++)
+	{
+		led_on(i);
+	}
+#endif
+		
+	led_off();
+}
+
 static void (*const modes[])(void) = {
+	//voltage_draw,
 	animation_draw,
 	stopwatch_draw,
 	clockset_draw,
 	clockset_draw,
+	voltage_draw,
 };
 
 static const unsigned mode_count = sizeof(modes) / sizeof(*modes);

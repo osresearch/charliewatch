@@ -38,6 +38,9 @@ OBJS += ucs.o
 OBJS += rtc.o
 OBJS += rtcasm.o
 OBJS += power.o
+OBJS += adc.o
+#OBJS += ref.o
+#OBJS += uart.o
 OBJS += buildtime.o
 
 all: charliewatch.hex
