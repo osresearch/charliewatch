@@ -1,9 +1,10 @@
 // v0.1 board is 0.622" radius
 // v0.2 board is 0.5642" radius (1 square inch)
 
-// between the links
-link_play = 1;
-// horizontal between the teeth
+// play between the links
+link_play = 1.25;
+
+// horizontal play between the teeth
 teeth_play = 0.2;
 
 
@@ -16,12 +17,12 @@ module link(w,d,h,last=0)
 			// positive rounded edge A1
 			translate([0,d,h/2])
 			rotate([0,90,0]) 
-			cylinder(d=h, h=w, $fn=16);
+			cylinder(d=h, h=w, $fn=32);
 
 			// positive rounded edge B2
 			translate([0,0,h/2])
 			rotate([0,90,0]) 
-			cylinder(d=h, h=w, $fn=16);
+			cylinder(d=h, h=w, $fn=32);
 
 			// last one has a square clasp
 			if(last) {
@@ -33,22 +34,22 @@ module link(w,d,h,last=0)
 		// negative large rounded edge B1
 		translate([-1,0,h/2])
 		rotate([0,90,0]) 
-		cylinder(d=h+link_play, h=w/3+1+teeth_play, $fn=16);
+		cylinder(d=h+link_play, h=w/3+1+teeth_play, $fn=32);
 
 		// negative large rounded edge B3
 		translate([w*2/3-teeth_play,0,h/2])
 		rotate([0,90,0]) 
-		cylinder(d=h+link_play, h=w/3+1+teeth_play, $fn=16);
+		cylinder(d=h+link_play, h=w/3+1+teeth_play, $fn=32);
 
 		// negative large rounded edge A2
 		translate([w*1/3-teeth_play,d,h/2])
 		rotate([0,90,0]) 
-		cylinder(d=h+link_play, h=w/3+2*teeth_play, $fn=16);
+		cylinder(d=h+link_play, h=w/3+2*teeth_play, $fn=32);
 
 		// pin hole
 		translate([-1,0,h/2])
 		rotate([0,90,0]) 
-		cylinder(d=h/2, h=w+2, $fn=16);
+		cylinder(d=h/2, h=w+2, $fn=32);
 
 		// if this is the last one,
 		// make the hole open on the bottom
@@ -57,12 +58,19 @@ module link(w,d,h,last=0)
 			rotate([20,0,0])
 			cube([w,h/2-teeth_play,h/2+1]);
 		}
+
+		// maybe add some fun patterns
+		if(0) {
+		translate([w*1/6,d/2+h/4,-1]) cylinder(d=w/4, h=h+2, $fn=7);
+		translate([w*3/6,d/2-h/4,-1]) cylinder(d=w/4, h=h+2, $fn=7);
+		translate([w*5/6,d/2+h/4,-1]) cylinder(d=w/4, h=h+2, $fn=7);
+		}
 	}
 
 	// pin
 	translate([1,d,h/2])
 	rotate([0,90,0])
-	cylinder(d=h/2-2*teeth_play, h=w-2, $fn=16);
+	cylinder(d=h/2-2*teeth_play, h=w-2, $fn=32);
 }
 
 module case(dial,lug_offset,band_width,height)
@@ -123,25 +131,29 @@ translate([0,25,0]) case(
 
 
 // v0.2 case
+band_width = 18;
+band_length = 8;
+band_count = round(160 / band_length / 2);
+
 case(
 	dial= 0.5642 * 25.4,
 	lug_offset = 14,
-	band_width = 15,
+	band_width = band_width,
 	height=6.5
 );
 
-for(i=[1:10])
+for(i=[1:band_count])
 {
-	translate([-i*8-14+3,-15/2,0])
+	translate([-i*band_length-14+3,-band_width/2,0])
 	rotate([0,0,90])
-	link(15,8,4);
+	link(band_width,band_length,4);
 }
 
-for(i=[1:10])
+for(i=[1:band_count])
 {
-	translate([+i*8+14+5,-15/2,0])
+	translate([+i*band_length+14+5,-band_width/2,0])
 	rotate([0,0,90])
-	link(15,8,4, last=(i==10));
+	link(band_width,band_length,4, last=(i==band_count));
 }
 
 %translate([0,40,0]) cube([200,1,1], center=true);
