@@ -2,13 +2,15 @@
 // v0.2 board is 0.5642" radius (1 square inch)
 
 // play between the links
-link_play = 1.25;
+link_play = 1.4;
 
 // horizontal play between the teeth
 teeth_play = 0.2;
 
+band_height = 4;
 
-module link(w,d,h,last=0)
+
+module link(w,d,h,last=0, first=0)
 {
 	render() difference() {
 		union() {
@@ -25,9 +27,13 @@ module link(w,d,h,last=0)
 			cylinder(d=h, h=w, $fn=32);
 
 			// last one has a square clasp
-			if(last) {
-				translate([w/3+teeth_play,-h/2+4*teeth_play,0])
-				cube([w/3-2*teeth_play,h/3,h/2]);
+			if(last)
+			{
+				translate([w/3+teeth_play,-h/2+0*teeth_play,0])
+				cube([w/3-2*teeth_play,h,h]);
+
+				translate([w/3+teeth_play,-h/3,h/2]) rotate([0,90,0]) 
+				cylinder(d=h, h=w/3, $fn=32);
 			}
 		}
 
@@ -52,12 +58,19 @@ module link(w,d,h,last=0)
 		cylinder(d=h/2, h=w+2, $fn=32);
 
 		// if this is the last one,
-		// make the hole open on the bottom
 		if(last) {
+			// make the hole open on the bottom
 			translate([0,-h/4+5*teeth_play,-1])
 			rotate([20,0,0])
-			cube([w,h/2-teeth_play,h/2+1]);
+			cube([w,h/2,h/2+1]);
 		}
+
+		if (first) {
+			// and make the clasp side even large
+			translate([w/3-teeth_play,d-h,-1])
+			cube([w/3+2*teeth_play,h,h+2]);
+		}
+
 
 		// maybe add some fun patterns
 		if(0) {
@@ -91,11 +104,11 @@ render() difference()
 		// lug
 		translate([+lug_offset+5,-band_width/2,0])
 		rotate([0,0,90])
-		link(band_width, 8, 4);
+		link(band_width, 8, band_height);
 
 		translate([-lug_offset+3,-band_width/2,0])
 		rotate([0,0,90])
-		link(band_width, 8, 4);
+		link(band_width, 8, band_height);
 
 		// bump for button
 		//translate([0,dial,height/4]) cylinder(r=3, h=height/2, $fn=30);
@@ -135,6 +148,8 @@ band_width = 18;
 band_length = 8;
 band_count = round(160 / band_length / 2);
 
+if(1)
+{
 case(
 	dial= 0.5642 * 25.4,
 	lug_offset = 14,
@@ -146,14 +161,24 @@ for(i=[1:band_count])
 {
 	translate([-i*band_length-14+3,-band_width/2,0])
 	rotate([0,0,90])
-	link(band_width,band_length,4);
+	link(band_width,band_length,band_height, first=(i==band_count));
 }
 
-for(i=[1:band_count])
+for(i=[1:band_count-1])
 {
 	translate([+i*band_length+14+5,-band_width/2,0])
 	rotate([0,0,90])
-	link(band_width,band_length,4, last=(i==band_count));
+	link(band_width,band_length,band_height, last=(i==band_count-1));
+}
+} else {
+
+// test band
+for(i=[1:4])
+{
+	translate([+i*band_length+14+5,-band_width/2,0])
+	rotate([0,0,90])
+	link(band_width,band_length,band_height, last=(i==4), first=(i==1));
+}
 }
 
-%translate([0,40,0]) cube([200,1,1], center=true);
+%translate([0,20,0]) cube([190,1,1], center=true);
