@@ -73,6 +73,13 @@ static void rtc_loadtime(){
     SetRTCSEC(5);
   }
 
+  // triangle test
+  if(0) {
+    SetRTCHOUR(20);
+    SetRTCMIN(0);
+    SetRTCSEC(15);
+  }
+
   // chase alignment test
   if(0) {
     SetRTCHOUR(21);
