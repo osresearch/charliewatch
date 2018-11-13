@@ -124,7 +124,7 @@ render() difference()
 		// lug
 		translate([+lug_offset+1,0,band_height/2])
 		rotate([0,0,90])
-		link(band_width, 8, band_height, w2=band_width);
+		link(band_width, 8, band_height, w2=band_width-1);
 
 		translate([-lug_offset-2,0,band_height/2])
 		rotate([0,0,90])
