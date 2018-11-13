@@ -8,67 +8,87 @@ link_play = 1.4;
 teeth_play = 0.2;
 
 band_height = 4;
+pin_ratio = 3/5;
 
 
-module link(w,d,h,last=0, first=0)
+module link(w,d,h,w2, last=0, first=0)
 {
 	render() difference() {
+		intersection() {
+			translate([0,0,-h/2-1])
+			linear_extrude(height=h+2)
+			polygon([
+				[-w2/2,-(d+h+(last?h:0))/2],
+				[+w2/2,-(d+h+(last?h:0))/2],
+				[+w/2,+(d+h)/2],
+				[-w/2,+(d+h)/2],
+			]);
 		union() {
-			cube([w,d,h]);
 
-			// positive rounded edge A1
-			translate([0,d,h/2])
+			cube([w2 > w ? w2 : w,d,h], center=true);
+
+			// positive rounded edge A1, length w2
+			translate([0,d/2,0])
 			rotate([0,90,0]) 
-			cylinder(d=h, h=w, $fn=32);
+			cylinder(d=h, h=w, $fn=32, center=true);
 
 			// positive rounded edge B2
-			translate([0,0,h/2])
+			translate([0,-d/2,0])
 			rotate([0,90,0]) 
-			cylinder(d=h, h=w, $fn=32);
+			cylinder(d=h, h=w2, $fn=32, center=true);
 
 			// last one has a square clasp
 			if(last)
 			{
-				translate([w/3+teeth_play,-h/2+0*teeth_play,0])
-				cube([w/3-2*teeth_play,h,h]);
+				translate([0,-h,0])
+				cube([w/3-2*teeth_play,h,h], center=true);
 
-				translate([w/3+teeth_play,-h/3,h/2]) rotate([0,90,0]) 
-				cylinder(d=h, h=w/3, $fn=32);
+				translate([0,-h*3/2,0])
+				rotate([0,90,0]) 
+				cylinder(d=h, h=w/3-2*teeth_play, $fn=32, center=true);
 			}
+		}
 		}
 
 		// negative large rounded edge B1
-		translate([-1,0,h/2])
+		translate([w2/3/2-teeth_play,-d/2,0])
 		rotate([0,90,0]) 
-		cylinder(d=h+link_play, h=w/3+1+teeth_play, $fn=32);
+		cylinder(d=h+link_play, h=w2/3+4, $fn=32);
 
-		// negative large rounded edge B3
-		translate([w*2/3-teeth_play,0,h/2])
-		rotate([0,90,0]) 
-		cylinder(d=h+link_play, h=w/3+1+teeth_play, $fn=32);
+		translate([-w2/3/2+teeth_play,-d/2,0])
+		rotate([0,-90,0]) 
+		cylinder(d=h+link_play, h=w2/3+4, $fn=32);
 
 		// negative large rounded edge A2
-		translate([w*1/3-teeth_play,d,h/2])
+		translate([0,d/2,0])
 		rotate([0,90,0]) 
-		cylinder(d=h+link_play, h=w/3+2*teeth_play, $fn=32);
+		cylinder(d=h+link_play, h=w2/3+2*teeth_play, $fn=32, center=true);
 
 		// pin hole
-		translate([-1,0,h/2])
+		translate([0,-d/2,0])
 		rotate([0,90,0]) 
-		cylinder(d=h/2, h=w+2, $fn=32);
+		cylinder(d=h*pin_ratio, h=w+2, $fn=32, center=true);
 
 		// if this is the last one,
 		if(last) {
 			// make the hole open on the bottom
-			translate([0,-h/4+5*teeth_play,-1])
-			rotate([20,0,0])
-			cube([w,h/2,h/2+1]);
+			translate([0,-d/2,-1])
+			//rotate([20,0,0])
+			cube([w,h*pin_ratio,h/2+1], center=true);
+
+			translate([0,-d/2-h/3,0])
+			rotate([0,90,0]) 
+			cylinder(d=h*pin_ratio, h=w+2, $fn=32, center=true);
+
+			translate([0,-d/2-h/3/2,0])
+			//rotate([20,0,0])
+			cube([w,h*pin_ratio,h*pin_ratio], center=true);
 		}
 
 		if (first) {
 			// and make the clasp side even large
-			translate([w/3-teeth_play,d-h,-1])
-			cube([w/3+2*teeth_play,h,h+2]);
+			translate([0,+h/3,-1])
+			cube([w2/3+2*teeth_play,h,h+2], center=true);
 		}
 
 
@@ -81,9 +101,9 @@ module link(w,d,h,last=0, first=0)
 	}
 
 	// pin
-	translate([1,d,h/2])
+	translate([0,d/2,0])
 	rotate([0,90,0])
-	cylinder(d=h/2-2*teeth_play, h=w-2, $fn=32);
+	cylinder(d=h*pin_ratio-2*teeth_play, h=w-2, $fn=32, center=true);
 }
 
 module case(dial,lug_offset,band_width,height)
@@ -102,13 +122,17 @@ render() difference()
 
 
 		// lug
-		translate([+lug_offset+5,-band_width/2,0])
+		translate([+lug_offset+1,0,band_height/2])
 		rotate([0,0,90])
-		link(band_width, 8, band_height);
+		link(band_width, 8, band_height, w2=band_width);
 
-		translate([-lug_offset+3,-band_width/2,0])
+		translate([-lug_offset-2,0,band_height/2])
 		rotate([0,0,90])
-		link(band_width, 8, band_height);
+		link(band_width, 8, band_height, w2=band_width);
+
+		translate([-lug_offset,0,band_height/2])
+		rotate([0,0,90])
+		cube([band_width,5,band_height], center=true);
 
 		// bump for button
 		//translate([0,dial,height/4]) cylinder(r=3, h=height/2, $fn=30);
@@ -153,22 +177,36 @@ if(1)
 case(
 	dial= 0.5642 * 25.4,
 	lug_offset = 14,
-	band_width = band_width,
+	band_width = band_width + band_count*0.5,
 	height=6.5
 );
 
+if(1)
 for(i=[1:band_count])
 {
-	translate([-i*band_length-14+3,-band_width/2,0])
+	translate([-i*band_length-14-2,0,band_height/2])
 	rotate([0,0,90])
-	link(band_width,band_length,band_height, first=(i==band_count));
+	link(
+		band_width+(band_count-i+1)*0.5,
+		band_length,
+		band_height,
+		band_width+(band_count-i)*0.5,
+		first=(i==band_count)
+	);
 }
 
+if(1)
 for(i=[1:band_count-1])
 {
-	translate([+i*band_length+14+5,-band_width/2,0])
+	translate([+i*band_length+14+1,0,band_height/2])
 	rotate([0,0,90])
-	link(band_width,band_length,band_height, last=(i==band_count-1));
+	link(
+		band_width + (band_count-i)*0.5,
+		band_length,
+		band_height,
+		band_width + (band_count-i-1)*0.5,
+		last=(i==band_count-1)
+	);
 }
 } else {
 
@@ -177,7 +215,7 @@ for(i=[1:4])
 {
 	translate([+i*band_length+14+5,-band_width/2,0])
 	rotate([0,0,90])
-	link(band_width,band_length,band_height, last=(i==4), first=(i==1));
+	link(band_width+i,band_length,band_height,band_width+i+1, last=(i==4), first=(i==1));
 }
 }
 
