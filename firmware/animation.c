@@ -274,9 +274,9 @@ static void triangle_animation(unsigned count)
 
 static void hour_animation(unsigned count)
 {
-	// run the hour forward
+	// run the hour backwards
 	if (3 == (count % 5))
-		led_display[1] = 60 + (led_display[1] - 60 + 1 + 12) % 12;
+		led_display[1] = 60 + (led_display[1] - 60 - 1 + 12) % 12;
 
 	// and the second hand should match it
 	led_display[2] = (led_display[2] + 1) % 60;
@@ -466,6 +466,12 @@ void animation_draw()
 
 	// set the default brightnesses for minute and second
 #define CONFIG_RED
+
+#ifdef CONFIG_PURPLE
+	led_bright[0] = 32;
+	led_bright[1] = (hour_bright / 4) + 1;
+	led_bright[2] = 4;
+#endif
 
 #ifdef CONFIG_ORANGE
 	led_bright[0] = 32;
