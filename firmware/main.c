@@ -41,10 +41,10 @@ int main(void)
 	//uart_init();
 
 	// drive port J and 1 to ground to avoid CMOS power drain
-	PJDIR |=  0xFF;
-	PJOUT &= ~0xFF;
-	P1DIR |=  0xFF;
-	P1OUT &= ~0xFF;
+	PJDIR |=  0xF;
+	PJOUT &= ~0xF;
+	P1DIR |=  0xF;
+	P1OUT &= ~0xF;
 
 	button_init();
 
