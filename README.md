@@ -17,6 +17,53 @@ larger board and fits in a 40mm case.
 
 [Charliewtch schematic](datasheets/charliewatch.pdf)
 
+Building the firmware
+-----
+
+Note: some other system packages (boost libraries?) might also be needed.
+
+First, get the toolchain (msp430-gcc):
+
+    sudo apt install gcc-msp430 mspdebug
+
+Then the all-important lib file (from https://www.ti.com/tool/MSPDS):
+
+    sudo apt install libhidapi-dev
+    mkdir MSPDebugStack
+    wget https://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPDS/3_15_1_001/export/MSPDebugStack_OS_Package_3_15_1_1.zip
+
+Copy in the hidapi header (WTFBBQ):
+
+    cp /usr/include/hidapi/hidapi.h ThirdParty/include/
+
+Copy the following into a file 'hidapi.patch', so we can use the system hidapi library:
+
+    --- Makefile    2020-12-18 18:01:18.602942502 +0100
+    +++ Makefile.new    2020-12-18 18:02:58.472096541 +0100
+    @@ -123,7 +123,7 @@
+     OBJS := $(patsubst %.cpp, %.o, $(SRC))
+    
+     all: $(BSLLIB) $(OBJS)
+    -   $(CXX) $(CXXFLAGS) -shared $(OUTNAME)$(OUTPUT) -o $(OUTPUT) $(OBJS) $(HIDOBJ) $(LIBDIRS) $(BSTATIC) $(STATIC_LIBS) $(BDYNAMIC) $(LIBS)
+    +   $(CXX) $(CXXFLAGS) -shared $(OUTNAME)$(OUTPUT) -o $(OUTPUT) $(OBJS) -lhidapi-libusb $(LIBDIRS) $(BSTATIC) $(STATIC_LIBS) $(BDYNAMIC) $(LIBS)
+        rm -f $(STATICOUTPUT).a
+        ar -rs $(STATICOUTPUT).a $(OBJS)
+
+Then apply and make:
+
+    patch < hidapi.patch
+    make
+
+
+Finally, build and flash the firmware:
+
+    git clone https://github.com/osresearch/charliewatch.git
+    cd charliewatch/firmware
+    make
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`../../MSPDebugStack/
+    mspdebug tilib "prog charliewatch.elf"
+
+
 Programming cable
 -----
 
