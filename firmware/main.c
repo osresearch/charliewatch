@@ -18,8 +18,14 @@
 #include "power.h"
 #include "button.h"
 
+// msp430g2553 has no RTC
+uint8_t RTCHOUR;
+uint8_t RTCMIN;
+uint8_t RTCSEC;
+
 //! Activates and configures the module, but does not turn on reference.
 void ref_init(){
+/*
   //Setting the master bit disables legacy mode.
   REFCTL0|=REFMSTR;
 
@@ -29,6 +35,7 @@ void ref_init(){
   //2.5V reference.
   REFCTL0 &= ~BGMODE;
   REFCTL0|=REFVSEL_2;
+*/
 }
 
 
@@ -40,18 +47,21 @@ int main(void)
 	ref_init();
 	//uart_init();
 
-	// drive port J and 1 to ground to avoid CMOS power drain
-	PJDIR |=  0xF;
-	PJOUT &= ~0xF;
-	P1DIR |=  0xF;
-	P1OUT &= ~0xF;
+	// drive all the ports to ground to avoid power drain
+	P3DIR = 0xFF;
+	P3OUT = 0;
+	P2DIR = 0xFF;
+	P2OUT = 0;
+	P1DIR = 0xFF;
+	P1OUT = 0;
 
-	button_init();
+	// xxx: configure this
+	//button_init();
 
 	// turn off all the LEDs to reduce power
 	led_off();
 
-#if 1
+#if 0
 	led_test();
 #else
 	while(1) {
@@ -60,16 +70,16 @@ int main(void)
 	}
 #endif
 
-	rtc_init();
-	ucs_init(); // doesn't work if crystal isn't there?
+	//rtc_init();
+	//ucs_init(); // doesn't work if crystal isn't there?
 
 	// Setup and enable WDT 16ms, ACLK, interval timer
 	WDTCTL = WDT_ADLY_16;
-	SFRIE1 |= WDTIE;
+	//SFRIE1 |= WDTIE;
 
 	// go into low power mode
-	power_setvcore(0);
-	ucs_slow();
+	//power_setvcore(0);
+	//ucs_slow();
 
 	__bis_SR_register(LPM3_bits + GIE);        // Enter LPM3
 
@@ -91,11 +101,12 @@ extern void animation_draw(void);
 static void voltage_draw(void)
 {
 	unsigned i;
+	unsigned raw_volts = 512;
+#if 0
 	unsigned raw_volts = adc12_single_conversion(
 		REFVSEL_1, ADC12SHT0_10, ADC12INCH_11);
 
 
-#if 0
 	static unsigned bright = 0;
 	bright = (bright + 1) % 128;
 
@@ -142,7 +153,7 @@ unsigned watch_mode = 0;
 void __attribute__ ((interrupt(WDT_VECTOR)))
 watchdog_timer(void)
 {
-	ucs_fast();
+	//ucs_fast();
 
 	button_update();
 
@@ -153,5 +164,5 @@ watchdog_timer(void)
 	modes[watch_mode]();
 
 	led_off();
-	ucs_slow();
+	//ucs_slow();
 }

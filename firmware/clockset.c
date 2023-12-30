@@ -43,9 +43,12 @@ void clockset_draw(void)
 		else
 			temp_hour = (temp_hour + 1) % 24;
 
-		SetRTCHOUR(temp_hour);
-		SetRTCMIN(temp_min);
-		SetRTCSEC(temp_sec);
+		RTCHOUR = temp_hour;
+		RTCMIN = temp_min;
+		RTCSEC = temp_sec;
+		//SetRTCHOUR(temp_hour);
+		//SetRTCMIN(temp_min);
+		//SetRTCSEC(temp_sec);
 	}
 
 	// no button presses in 15 seconds => go back to clock mode

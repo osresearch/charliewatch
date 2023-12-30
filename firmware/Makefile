@@ -1,8 +1,9 @@
 # set default flashing serial port, dont override if passed in as an argument
 PORT ?= /dev/ttyACM0
 
-# The Charliewatch uses the CC430 5-variant with no LCD controller
-MCU ?= cc430f5137
+# The Charliewatch v1 uses the CC430 5-variant with no LCD controller
+# The Charliewatch v2 uses the MSP430G2553
+MCU ?= msp430g2553
 
 # Currently we're flashing with a launchpad board
 PROGRAMMER ?= tilib
@@ -34,11 +35,11 @@ OBJS += button.o
 OBJS += animation.o
 OBJS += stopwatch.o
 OBJS += clockset.o
-OBJS += ucs.o
-OBJS += rtc.o
-OBJS += rtcasm.o
-OBJS += power.o
-OBJS += adc.o
+#OBJS += ucs.o
+#OBJS += rtc.o
+#OBJS += rtcasm.o
+#OBJS += power.o
+#OBJS += adc.o
 #OBJS += ref.o
 #OBJS += uart.o
 OBJS += buildtime.o

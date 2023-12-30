@@ -16,6 +16,7 @@ Animations are drawn:
 #include <stdlib.h>
 
 #include "led.h"
+#include "rtc.h"
 
 void delay(unsigned len)
 {
